@@ -1,0 +1,347 @@
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.container {
+    background-color: #eceff1;
+    position: relative;
+    min-height: 600px;
+    height: calc(100% - 60px);
+    width: 100%;
+    margin: 0 auto;
+    max-width: 1200px;
+    min-width: 960px;
+    padding-left: 20px;
+    padding-top: 60px;
+    font: 14px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.glyph {
+    border-bottom: 1px dotted #ccc;
+    padding: 10px 0 20px;
+    margin-bottom: 20px;
+}
+
+.preview-scale,
+.preview-glyphs {
+    display: flex;
+    flex-direction: row;
+}
+
+.preview-scale {
+    color: #888;
+    font-size: 12px;
+    margin-top: 24px;
+}
+
+.step {
+    flex-grow: 1;
+    line-height: 0.5;
+}
+
+md-dialog-actions > button {
+    width: 200px;
+}
+
+html {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+
+body {
+    position: relative;
+    margin: 0 auto !important;
+    width: 1200px;
+    height: 100%;
+    background-color: white;
+}
+
+.lst-nv {
+    top: 53px;
+    padding-bottom: 10px;
+    overflow: hidden;
+    height: 80%;
+    position: absolute;
+    display: inline-block;
+    width: 18%;
+}
+
+.main-lst-nv:hover {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.main-lst-nv {
+    overflow: hidden;
+    width: 100%;
+    height: calc(100% - 60px);
+}
+
+.main-nv {
+    height: 80%;
+    position: absolute;
+    left: 19%;
+    display: inline-block;
+    width: 83%;
+}
+
+.card-nv {
+    font-size: 16px !important;
+    text-transform: none !important;
+    text-align: left !important;
+    padding-top: 16px;
+    padding-left: 35px !important;
+    width: calc(100% - 16px);
+    height: 50px;
+}
+
+.card-click {
+    background-color: #009688 !important;
+    color: white !important;
+}
+
+.card-nv:hover {
+    background-color: rgba(0, 150, 136, 0.21) !important;
+}
+
+.card-click:hover {
+    background-color: #009688 !important;
+}
+
+.btn-add-nv {
+    width: calc(100% - 16px);
+    height: 50px;
+}
+
+.input-search {
+    left: 35px;
+    height: 36px;
+    position: absolute;
+    display: inline-block;
+    width: 210px;
+}
+
+.icon-search {
+
+    height: 23px;
+    width: 23px;
+    z-index: 10;
+    position: absolute;
+    left: 5px;
+    top: 7px;
+}
+
+.i-s {
+    border-color: #c0c0c0;
+    outline: none;
+    padding-left: 33px;
+    border-radius: 10px;
+    height: 30px;
+    width: 200px;
+    position: absolute;
+}
+
+.select-hd {
+    position: absolute;
+    left: 277px;
+    margin-left: 45px;
+    width: 200px;
+    display: inline-block;
+
+}
+
+.hd-main {
+    height: 50px;
+    position: relative;
+}
+
+md-input-container {
+    margin: 0 !important;
+}
+
+md-select {
+    width: 100%;
+}
+
+md-input-container {
+    width: 100%;
+}
+
+.date-l {
+    top: 0;
+    position: absolute;
+    left: 595px;
+    width: 245px;
+}
+
+.dt {
+    width: 90%;
+    margin: 10px auto;
+    height: 100%;
+}
+
+.tb-hd {
+    height: calc(100% - 156px);
+    width: 100%;
+}
+
+.add-hd {
+    float: left;
+    position: relative;
+    width: 46%;
+    padding-left: 35px;
+}
+
+.partner {
+    padding-left: 40px;
+    width: 41%;
+    position: relative;
+    float: left;
+}
+
+.partner > button {
+    min-width: 48px !important;
+    top: -10px;
+    right: 55px;
+    position: absolute;
+}
+
+.top-main-nv {
+    padding-bottom: 20px;
+}
+
+.partner > md-input-container {
+    width: 62%;
+    float: left;
+}
+
+.input-add {
+    float: left;
+    width: 50%;
+}
+
+.button-add {
+    top: -10px;
+    left: 66px;
+    width: 50px;
+    position: absolute;
+}
+
+.top-main {
+    padding-top: 20px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.btn-nomal {
+    text-transform: none !important;
+    font-size: 13px !important;
+}
+
+.bot-bnt {
+    margin-top: 30px;
+    margin-right: 60px;
+    float: right;
+}
+
+.chek-total {
+    margin-left: 46px;
+    margin-top: 30px;
+    float: left;
+    font-size: 20px;
+}
+
+.page-count {
+    display: none !important;
+}
+
+.chek-total > button {
+    width: 180px;
+    background-color: white !important;
+}
+
+.chek-total > button > span {
+    font-size: 16px;
+    text-transform: none !important;
+}
+
+.l-k {
+    padding-top: 7px;
+    height: 36px;
+    padding-left: 20px;
+    width: 200px !important;
+    display: inline-block;
+}
+
+.l-k > md-checkbox {
+    margin: 0 !important;
+}
+
+.dt .dt-cell, .dt .dt-header-cell {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    -o-user-select: text !important;
+    user-select: text !important;
+}
+
+.select-black {
+    background-color: #272e33;
+    color: #eceff1;
+}
+
+.login {
+
+   top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    background: #e7e7e7;
+}
+
+.box-login {
+
+    padding: 40px;
+    background: white;
+    height: 500px;
+    width: 450px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+.btn-login{
+    margin-top: 30px !important;
+    margin-left: 240px!important;
+    margin-bottom: 40px!important;
+}
+.loading{
+    width: calc(100% + 80px)!important;
+    margin-left: -40px!important;
+    margin-right:-40px!important;
+    margin-top: -40px!important;
+}
+.admin{
+    right: 70px!important;
+    position: absolute!important;
+    top: 8px!important;
+}
