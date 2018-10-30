@@ -2,9 +2,13 @@
 
 angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages'])
     .controller('AppCtrl', function ($scope, $http, $mdDialog, $mdToast) {
-        var all = 'Tất cả';
-//         var admin = 'Admin';
+        let all = 'Tất cả';
+//         let admin = 'Admin';
 //         $scope.total = 0;
+        $scope.isOrder = true;
+        let datePicker = getDateByMontg(new Date());
+        $scope.dateStart = datePicker.start;
+        $scope.dateEnd = datePicker.end;
         $scope.partner = all;
         $scope.lstPartner = [all];
         getPartner(function (data) {
@@ -13,12 +17,11 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             });
             $scope.$digest();
         });
-        $scope.userSelect = {};
         $scope.dateSearch = new Date();
 //         $scope.data = [];
 //         $scope.blackLst = false;
 //         $scope.erorr = true;
-//         var show = true;
+//         let show = true;
 //         $scope.maDonHang = '';
 //         $scope.index = 0;
 //         $scope.lstNV = [];
@@ -26,58 +29,43 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
         $scope.locDay = 'month';
         $scope.users = [];
         $scope.user = {name: 'admin', pass: '1234'};
+        $scope.userSelect = {};
 //         $scope.pass = null;
         $scope.isLogin = true;
-//         var blackLst = [];
-//         var database = firebase.database();
+//         let blackLst = [];
+//         let database = firebase.database();
 //         getListHD(all);
 //         getBlackLst();
-//         var removeLis;
+//         let removeLis;
 //         getPartner();
 //         listenRemove();
-//         var commentsRef = database.ref('nv');
+//         let commentsRef = database.ref('nv');
 //         commentsRef.on('child_added', function (data) {
 //             $scope.$apply(function () {
 //                 $scope.lstNV.push({name: data.key})
 //             });
 //         });
-//         $scope.removeHDCode = function (ev) {
-//             var confirm = $mdDialog.prompt()
-//                 .title('Xóa đơn hàng theo mã')
-//                 .textContent('Nhập mã đơn hàng cần xóa')
-//                 .placeholder('nhập ...')
-//                 .ariaLabel('Mã đơn hàng')
-//                 .targetEvent(ev)
-//                 .required(true)
-//                 .ok('Xóa')
-//                 .cancel('Hủy');
-//             $mdDialog.show(confirm).then(function (result) {
-//                 show = true;
-//                 result = result.toUpperCase();
-//                 database.ref('employees/Tất cả/order/' + result).once('value').then(function (snapshot) {
-//                     if (snapshot.val()) {
-//                         for (var i = 0; i < $scope.lstNV.length; i++) {
-//                             removeHd('employees/', $scope.lstNV[i].name, result);
-//                             removeHd('blackLst/', $scope.lstNV[i].name, result);
-//                         }
-//                     } else {
-//                         $mdDialog.show(
-//                             $mdDialog.alert()
-//                                 .parent(angular.element(document.body))
-//                                 .clickOutsideToClose(true)
-//                                 .title('Tìm Đơn Hàng')
-//                                 .textContent('Đơn hàng không tồn tại')
-//                                 .ok('Ok')
-//                                 .targetEvent(ev)
-//                         );
-//                     }
-//                 })
-//
-//
-//             });
-//         };
+        $scope.removeHDCode = function (ev) {
+            let confirm = $mdDialog.prompt()
+                .title('Xóa đơn hàng theo mã')
+                .textContent('Nhập mã đơn hàng cần xóa')
+                .placeholder('nhập ...')
+                .ariaLabel('Mã đơn hàng')
+                .targetEvent(ev)
+                .required(true)
+                .ok('Xóa')
+                .cancel('Hủy');
+            $mdDialog.show(confirm).then(function (result) {
+                result = result.toUpperCase();
+                removeOrderByCode(result, function (data) {
+                    if (data.ok) {
+                        getOrderByEmployee();
+                    }
+                })
+            });
+        };
         $scope.removePartner = function (ev) {
-            var confirm = $mdDialog.prompt()
+            let confirm = $mdDialog.prompt()
                 .title('Xóa đối tác')
                 .textContent('Nhập tên đối tác cần xóa')
                 .placeholder('nhập ...')
@@ -103,7 +91,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 //
 //
         $scope.removeNV = function (ev) {
-            var confirm = $mdDialog.prompt()
+            let confirm = $mdDialog.prompt()
                 .title('Xóa nhân viên')
                 .textContent('Nhập tên nhân viên cần xóa')
                 .placeholder('nhập ...')
@@ -143,25 +131,26 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             }
         }
         ;
-//         $scope.dateLocale = {
-//             formatDate: function (date) {
-//                 var m = moment(date);
-//                 return m.isValid() ? m.format('DD / MM / YYYY') : '';
-//             }
-//         };
-//         $scope.dateLocaleMonth = {
-//             formatDate: function (date) {
-//                 var m = moment(date);
-//                 return m.isValid() ? m.format('MM / YYYY') : '';
-//             }
-//         };
+        $scope.dateLocale = {
+            formatDate: function (date) {
+                let m = moment(date);
+                return m.isValid() ? m.format('DD/MM/YYYY') : '';
+            }
+        };
+        $scope.dateLocaleMonth = {
+            formatDate: function (date) {
+                let m = moment(date);
+                return m.isValid() ? m.format('MM/YYYY') : '';
+            }
+        };
         $scope.getNv = function () {
             return getData('getAllUser').then((data) => {
                 $scope.users = data;
+                $scope.userSelect = data[0]
             });
         };
         $scope.addPartner = function (ev) {
-            var confirm = $mdDialog.prompt()
+            let confirm = $mdDialog.prompt()
                 .parent(angular.element(document.body))
                 .title('Thêm nhân đối tác')
                 .textContent('Nhập tên đối tác.')
@@ -222,7 +211,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             }
         };
         $scope.paging = function (offset, size) {
-            if ( $scope.data.length>size&&offset === parseInt($scope.data.length / size)) {
+            if ($scope.data.length > size && offset === parseInt($scope.data.length / size)) {
                 let obj = getDate();
                 obj.end = $scope.data[$scope.data.length - 1].created_at;
                 getAllOrderByEmployee(obj, function (data) {
@@ -230,7 +219,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                         $scope.data.push({
                             code: order.code,
                             date: moment(order.created_at).format('DD-MM-YYYY H:mm'),
-                            created_at:order.created_at,
+                            created_at: order.created_at,
                             phone: order.phone,
                             nv: order.employee,
                             partner: order.partner
@@ -271,40 +260,42 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             });
         };
 //
-//         $scope.upHd = function (file, ev) {
-//             if (file) {
-//                 var confirm = $mdDialog.confirm()
-//                     .parent(angular.element(document.body))
-//                     .title('Tải Lên file đơn hàng')
-//                     .textContent('Xác nhân tải lên file ' + file.name)
-//                     .targetEvent(ev)
-//                     .ok('Xác nhận')
-//                     .cancel('Hủy');
-//
-//                 $mdDialog.show(confirm).then(function () {
-//                     Papa.parse(file, {
-//                         header: true,
-//                         complete: function (results, file) {
-//                             show = true;
-//                             for (var i = 0; i < results.data.length; i++) {
-//                                 if (results.data[i]['Order Number'] && results.data[i]['Shipping Phone Number'] && !isNaN(results.data[i]['Shipping Phone Number'])) {
-//                                     setDataAll(results.data[i]['Shipping Phone Number'], results.data[i]['Order Number']);
-//                                     for (var j = 1; j < $scope.lstNV.length; j++) {
-//                                         if (results.data[i]['Order Number'] && !isNaN(results.data[i]['Shipping Phone Number'])) {
-//                                             updatePhone('employees/', $scope.lstNV[j].name, results.data[i]['Shipping Phone Number'], results.data[i]['Order Number']);
-//                                         }
-//
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                     });
-//                 });
-//             }
-//         };
+        $scope.upHd = function (file, ev) {
+            if (file) {
+                let confirm = $mdDialog.confirm()
+                    .parent(angular.element(document.body))
+                    .title('Tải Lên file đơn hàng')
+                    .textContent('Xác nhân tải lên file ' + file.name)
+                    .targetEvent(ev)
+                    .ok('Xác nhận')
+                    .cancel('Hủy');
+
+                $mdDialog.show(confirm).then(function () {
+                    Papa.parse(file, {
+                        header: true,
+                        complete: function (results, file) {
+                            let dataImport = [];
+                            for (let i = 0; i < results.data.length; i++) {
+                                if (results.data[i]['Order Number'] && results.data[i]['Shipping Phone Number'] && !isNaN(results.data[i]['Shipping Phone Number'])) {
+                                    dataImport.push({
+                                        code: results.data[i]['Order Number'],
+                                        phone: results.data[i]['Shipping Phone Number']
+                                    })
+                                }
+                            }
+                            importOrder(dataImport, function (data) {
+                                if (data.ok) {
+                                    getOrderByEmployee();
+                                }
+                            })
+                        }
+                    });
+                });
+            }
+        };
 //
 //         $scope.upBlackLst = function (file, ev) {
-//             var confirm = $mdDialog.confirm()
+//             let confirm = $mdDialog.confirm()
 //                 .parent(angular.element(document.body))
 //                 .title('Tải Lên file khách hàng đen')
 //                 .textContent('Xác nhân tải lên file ' + file.name)
@@ -317,8 +308,8 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 //                     header: true,
 //                     complete: function (results, file) {
 //                         show = true;
-//                         for (var i = 0; i < results.data.length; i++) {
-//                             for (var j = 0; j < $scope.lstNV.length; j++) {
+//                         for (let i = 0; i < results.data.length; i++) {
+//                             for (let j = 0; j < $scope.lstNV.length; j++) {
 //                                 if (results.data[i]['Order Number'] && !isNaN(results.data[i]['Shipping Phone Number'])) {
 //                                     database.ref('phoneBlack/' + results.data[i]['Shipping Phone Number']).set('').then(function (value) {
 //                                         if (show) {
@@ -396,7 +387,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
         };
         $scope.addHD = function (ev) {
             $scope.maDonHang = $scope.maDonHang.toUpperCase();
-            var maDonHang = angular.copy($scope.maDonHang);
+            let maDonHang = angular.copy($scope.maDonHang);
             if ($scope.maDonHang) {
                 if (!($scope.maDonHang.indexOf(" ") > -1)) {
                     addOrder({
@@ -411,7 +402,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                 $scope.data.unshift({
                                     code: order.code,
                                     date: moment(order.created_at).format('DD-MM-YYYY H:mm'),
-                                    created_at:order.created_at,
+                                    created_at: order.created_at,
                                     phone: order.phone,
                                     nv: order.employee,
                                     partner: order.partner
@@ -456,53 +447,52 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 
 
         function playAudio() {
-            var audio = new Audio('sound/nasty-error-long.mp3');
+            let audio = new Audio('sound/nasty-error-long.mp3');
             audio.play();
         }
 
-//         $scope.searchHD = function (ev) {
-//             $scope.searchKey = $scope.searchKey.toLocaleUpperCase();
-//             var searchKey = convertString($scope.searchKey);
-//             if ($scope.searchKey) {
-//                 database.ref('employees/Tất cả/order/' + searchKey).once('value').then(function (snapshot) {
-//                     if (snapshot.val()) {
-//                         if (snapshot.val().nv) {
-//                             $mdDialog.show(
-//                                 $mdDialog.alert()
-//                                     .parent(angular.element(document.body))
-//                                     .clickOutsideToClose(true)
-//                                     .title('Đơn hàng : ' + convertStringPart(snapshot.key))
-//                                     .textContent('Nhân viên : ' + snapshot.val().nv + ' -- Thời gian : ' + snapshot.val().date + '-- Đối tác : ' + snapshot.val().partner)
-//                                     .ok('Ok')
-//                                     .targetEvent(ev)
-//                             );
-//                         } else {
-//                             $mdDialog.show(
-//                                 $mdDialog.alert()
-//                                     .parent(angular.element(document.body))
-//                                     .clickOutsideToClose(true)
-//                                     .title('Đơn hàng : ' + convertStringPart(snapshot.key))
-//                                     .textContent('Đơn hàng chưa được nhân viên nào xử lý')
-//                                     .ok('Ok')
-//                                     .targetEvent(ev)
-//                             );
-//                         }
-//                     }
-//                     else {
-//                         $mdDialog.show(
-//                             $mdDialog.alert()
-//                                 .parent(angular.element(document.body))
-//                                 .clickOutsideToClose(true)
-//                                 .title('Tìm Đơn Hàng')
-//                                 .textContent('Đơn hàng không tồn tại')
-//                                 .ok('Ok')
-//                                 .targetEvent(ev)
-//                         );
-//
-//                     }
-//                 })
-//             }
-//         };
+        $scope.searchHD = function (ev) {
+            $scope.searchKey = $scope.searchKey.toLocaleUpperCase();
+            if ($scope.searchKey) {
+                findOrderByCode($scope.searchKey, function (data) {
+                    if (data.code) {
+                        if (data.employee) {
+                            $mdDialog.show(
+                                $mdDialog.alert()
+                                    .parent(angular.element(document.body))
+                                    .clickOutsideToClose(true)
+                                    .title('Đơn hàng : ' + data.code)
+                                    .textContent('Nhân viên : ' + data.employee + ' -- Thời gian : ' + moment(data.created_at).format('DD-MM-YYYY H:mm') + ' -- Đối tác : ' + data.partner)
+                                    .ok('Ok')
+                                    .targetEvent(ev)
+                            );
+                        } else {
+                            $mdDialog.show(
+                                $mdDialog.alert()
+                                    .parent(angular.element(document.body))
+                                    .clickOutsideToClose(true)
+                                    .title('Đơn hàng : ' + data.code)
+                                    .textContent('Đơn hàng chưa được nhân viên nào xử lý')
+                                    .ok('Ok')
+                                    .targetEvent(ev)
+                            );
+                        }
+                    }
+                    else {
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.body))
+                                .clickOutsideToClose(true)
+                                .title('Tìm Đơn Hàng')
+                                .textContent('Đơn hàng không tồn tại')
+                                .ok('Ok')
+                                .targetEvent(ev)
+                        );
+
+                    }
+                })
+            }
+        };
         $scope.locHd = function () {
             if ($scope.isOrder && $scope.dateStart && $scope.dateEnd) {
                 getOrderByEmployee();
@@ -511,88 +501,38 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
         $scope.selectPartner = function () {
             getOrderByEmployee();
         };
-//         var dataExport;
-//         $scope.getTotal = function (callback) {
-//             var code = $scope.lstNV[$scope.index].name;
-//             var ref = '';
-//             if (!$scope.blackLst) {
-//                 ref = 'employees/';
-//             } else {
-//                 ref = 'blackLst/';
-//
-//             }
-//             if (removeLis) {
-//                 removeLis.off();
-//             }
-//             if ($scope.locDay === 'all' && $scope.partner === all) {
-//                 removeLis = database.ref(ref + code + '/order');
-//             }
-//             if ($scope.locDay !== 'all' && $scope.partner === all) {
-//                 var dateSearch = '';
-//                 if ($scope.locDay === 'day') {
-//                     dateSearch = moment($scope.dateSearch).format('DD / MM / YYYY');
-//                 } else {
-//                     dateSearch =) moment($scope.dateSearch.format('MM / YYYY');
-//                 }
-//                 removeLis = database.ref(ref + code + '/order').orderByChild($scope.locDay).equalTo(dateSearch);
-//             }
-//             if ($scope.locDay === 'all' && $scope.partner !== all) {
-//                 removeLis = database.ref(ref + code + '/order').orderByChild($scope.partner + 'date');
-//             }
-//             if ($scope.locDay !== 'all' && $scope.partner !== all) {
-//                 var dateSearch = '';
-//                 if ($scope.locDay === 'day') {
-//                     dateSearch = moment($scope.dateSearch).format('DD / MM / YYYY');
-//                 } else {
-//                     dateSearch = moment($scope.dateSearch).format('MM / YYYY');
-//                 }
-//                 removeLis = database.ref(ref + code + '/order').orderByChild($scope.partner + $scope.locDay).equalTo(dateSearch);
-//             }
-//             removeLis.once('value').then(function (snapshot) {
-//                 if (callback) {
-//                     callback(snapshot.val());
-//                 }
-//                 dataExport = snapshot.val();
-//                 $scope.$apply(function () {
-//                     $scope.total = Object.keys(snapshot.val()).length;
-//                 })
-//             });
-//         };
-//         $scope.exportOrder = function () {
-//             $scope.disableExport = true;
-//             var dataExport = [];
-//             $scope.getTotal(function (data) {
-//                 if ($scope.lstNV[$scope.index].name !== all) {
-//                     for (key in data) {
-//                         dataExport.push([convertStringPart(key), data[key].date, $scope.lstNV[$scope.index].name, data[key].partner])
-//                     }
-//                 } else {
-//                     for (key in data) {
-//                         dataExport.push([convertStringPart(key), data[key].date, data[key].nv, data[key].partner])
-//                     }
-//                 }
-//                 var csv = Papa.unparse({
-//                     fields: ["Mã Đơn Hàng", "Thời gian", "Nhân viên", "Đối tác"],
-//                     data: dataExport
-//                 }, {delimiter: ';'});
-//                 var blob = new Blob([csv], {type: "text/plain;charset=utf-8"});
-//                 saveAs(blob, "order.export.csv");
-//                 $scope.disableExport = false;
-//             });
-//
-//         };
-//         $scope.removeHDMonth = function (ev) {
-//             showDialogRemoveHD(ev, function (date) {
-//                 var dateSearch = moment(date).format('MM / YYYY');
-//                 show = true;
-//                 for (var i = 0; i < $scope.lstNV.length; i++) {
-//                     var removeLis1 = database.ref('employees/' + $scope.lstNV[i].name + '/order');
-//                     var removeLis2 = database.ref('blackLst/' + $scope.lstNV[i].name + '/order');
-//                     removeByOrder(removeLis1, removeLis2, dateSearch);
-//                 }
-//
-//             });
-//         };
+//         let dataExport;
+        $scope.getTotal = function () {
+            getTotalOrder(getDate(), function (data) {
+                $scope.total = data.count;
+                $scope.$digest();
+            })
+        };
+        $scope.exportOrder = function () {
+            $scope.disableExport = true;
+            let dataExport = [];
+            let obj = getDate();
+            obj.isFull = true;
+            getAllOrderByEmployee(obj, function (data) {
+                for (let order of data) {
+                    dataExport.push([order.code, moment(order.created_at).format('DD-MM-YYYY H:mm'), order.employee, order.partner])
+                }
+                let csv = Papa.unparse({
+                    fields: ["Mã Đơn Hàng", "Thời gian", "Nhân viên", "Đối tác"],
+                    data: dataExport
+                }, {delimiter: ';'});
+                let blob = new Blob([csv], {type: "text/plain;charset=utf-8"});
+                saveAs(blob, "order.export.csv");
+                $scope.disableExport = false;
+            });
+        };
+        $scope.removeHDMonth = function (ev) {
+            showDialogRemoveHD(ev, function (date) {
+                removeOrderInMonth(getDateByMontg(date), function (data) {
+                    getOrderByEmployee();
+                })
+            });
+        };
         $scope.checkPri = function () {
 
             if ($scope.userSelect.name === 'admin' || $scope.partner === all) {
@@ -647,15 +587,15 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 //
 //         function removeByOrder(data1, data2, dateSearch) {
 //             data1.orderByChild('month').equalTo(dateSearch).once('value').then(function (snapshot) {
-//                 var updates = {};
-//                 for (var key in snapshot.val()) {
+//                 let updates = {};
+//                 for (let key in snapshot.val()) {
 //                     updates[key] = null;
 //                 }
 //                 data1.update(updates);
 //             });
 //             data2.orderByChild('month').equalTo(dateSearch).once('value').then(function (snapshot) {
-//                 var updates = {};
-//                 for (var key in snapshot.val()) {
+//                 let updates = {};
+//                 for (let key in snapshot.val()) {
 //                     updates[key] = null;
 //                 }
 //                 data2.update(updates).then(function (value) {
@@ -725,7 +665,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 //         }
 //
 //         function checkBlackList(phone) {
-//             for (var i = 0; i < blackLst.length; i++) {
+//             for (let i = 0; i < blackLst.length; i++) {
 //                 if (phone === blackLst[i]) {
 //                     return true;
 //                 }
@@ -749,29 +689,30 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 //             })
 //         }
 //
-//         function updatePhone(ref, name, phone, code) {
-//             database.ref(ref + name + '/order/' + code).once('value').then(function (snapshot) {
-//                 if (snapshot.val()) {
-//                     database.ref(ref + name + '/order/' + snapshot.key + '/phone')
-//                         .set(phone).then(function (value) {
-//                         if (checkBlackList(phone)) {
-//                             database.ref('employees/' + name + '/order/' + code).once('value').then(function (snapshot) {
-//                                 if (snapshot.val()) {
-//                                     database.ref('blackLst/' + name + '/order/' + code).set(snapshot.val());
-//                                 }
-//                             })
-//                         }
-//                     })
-//                 }
-//             });
-//         }
+        function updatePhone(ref, name, phone, code) {
+            database.ref(ref + name + '/order/' + code).once('value').then(function (snapshot) {
+                if (snapshot.val()) {
+                    database.ref(ref + name + '/order/' + snapshot.key + '/phone')
+                        .set(phone).then(function (value) {
+                        if (checkBlackList(phone)) {
+                            database.ref('employees/' + name + '/order/' + code).once('value').then(function (snapshot) {
+                                if (snapshot.val()) {
+                                    database.ref('blackLst/' + name + '/order/' + code).set(snapshot.val());
+                                }
+                            })
+                        }
+                    })
+                }
+            });
+        }
+
 // function checlOderBlackList() {
 //
 // }
 
 //
 //         function creatRef(code) {
-//             var ref = '';
+//             let ref = '';
 //             if (!$scope.blackLst) {
 //                 ref = 'employees/';
 //             } else {
@@ -785,7 +726,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 //                 removeLis = database.ref(ref + code + '/order').limitToLast(maxDh);
 //             }
 //             if ($scope.locDay !== 'all' && $scope.partner === all) {
-//                 var dateSearch = '';
+//                 let dateSearch = '';
 //                 if ($scope.locDay === 'day') {
 //                     dateSearch = moment($scope.dateSearch).format('DD / MM / YYYY');
 //                 } else {
@@ -797,7 +738,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 //                 removeLis = database.ref(ref + code + '/order').limitToLast(maxDh).orderByChild($scope.partner + 'date');
 //             }
 //             if ($scope.locDay !== 'all' && $scope.partner !== all) {
-//                 var dateSearch = '';
+//                 let dateSearch = '';
 //                 if ($scope.locDay === 'day') {
 //                     dateSearch = moment($scope.dateSearch).format('DD / MM / YYYY');
 //                 } else {
@@ -838,7 +779,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                         $scope.data.push({
                             code: order.code,
                             date: moment(order.created_at).format('DD-MM-YYYY H:mm'),
-                            created_at:order.created_at,
+                            created_at: order.created_at,
                             phone: order.phone,
                             nv: order.employee,
                             partner: order.partner
@@ -850,42 +791,49 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
         }
 
 //
-//         function showDialogRemoveHD($event, remove) {
-//             $scope.items = [1, 2, 3];
-//             var parentEl = angular.element(document.body);
-//             $mdDialog.show({
-//                 parent: parentEl,
-//                 targetEvent: $event,
-//                 template:
-//                 '<md-dialog aria-label="Xóa đơn hàng theo tháng">\n' +
-//                 '    <md-dialog-content class="md-dialog-content">\n' +
-//                 '        <h2 class="md-title ">Xóa Đơn hàng theo tháng</h2>\n' +
-//                 '<div  class="md-dialog-content-body " ><p >Nhập tháng cần xóa</p></div>' +
-//                 '   <md-datepicker style="margin-left: -16x!important;" md-mode="month" ng-model="dateRemove" md-placeholder="Nhập tháng"\n' +
-//                 '                       md-date-locale="dateLocaleMonth"></md-datepicker>\n' +
-//                 '    </md-dialog-content>\n' +
-//                 '    <md-dialog-actions>\n' +
-//                 '        <md-button ng-click="closeDialog()" class="md-primary">Hủy</md-button>\n' +
-//                 '        <md-button  ng-disabled="!dateRemove" ng-click="removeOderMonth()" class="md-primary"> Xóa</md-button>\n' +
-//                 '    </md-dialog-actions>\n' +
-//                 '</md-dialog>',
-//                 locals: {
-//                     items: $scope.items
-//                 },
-//                 controller: DialogController
-//             });
-//
-//             function DialogController($scope, $mdDialog, items) {
-//                 $scope.dateRemove = null;
-//                 $scope.closeDialog = function () {
-//                     $mdDialog.hide();
-//                 };
-//                 $scope.removeOderMonth = function () {
-//                     $mdDialog.hide();
-//                     remove($scope.dateRemove);
-//                 }
-//             }
-//         }
+        function showDialogRemoveHD($event, remove) {
+            $scope.items = [1, 2, 3];
+            let parentEl = angular.element(document.body);
+            $mdDialog.show({
+                parent: parentEl,
+                targetEvent: $event,
+                template:
+                    '<md-dialog aria-label="Xóa đơn hàng theo tháng">\n' +
+                    '    <md-dialog-content class="md-dialog-content">\n' +
+                    '        <h2 class="md-title ">Xóa Đơn hàng theo tháng</h2>\n' +
+                    '<div  class="md-dialog-content-body " ><p >Nhập tháng cần xóa</p></div>' +
+                    '   <md-datepicker style="margin-left: -16x!important;" md-mode="month" ng-model="dateRemove" md-placeholder="Nhập tháng"\n' +
+                    '                       md-date-locale="dateLocaleMonth"></md-datepicker>\n' +
+                    '    </md-dialog-content>\n' +
+                    '    <md-dialog-actions>\n' +
+                    '        <md-button ng-click="closeDialog()" class="md-primary">Hủy</md-button>\n' +
+                    '        <md-button  ng-disabled="!dateRemove" ng-click="removeOderMonth()" class="md-primary"> Xóa</md-button>\n' +
+                    '    </md-dialog-actions>\n' +
+                    '</md-dialog>',
+                locals: {
+                    items: $scope.items
+                },
+                controller: DialogController
+            });
+
+            function DialogController($scope, $mdDialog, items) {
+                $scope.dateRemove = null;
+                $scope.dateLocaleMonth = {
+                    formatDate: function (date) {
+                        let m = moment(date);
+                        return m.isValid() ? m.format('MM / YYYY') : '';
+                    }
+                };
+                $scope.closeDialog = function () {
+                    $mdDialog.hide();
+                };
+                $scope.removeOderMonth = function () {
+                    $mdDialog.hide();
+                    remove($scope.dateRemove);
+                }
+            }
+        }
+
 //
         $scope.openChangePass = function (ev) {
             showDialogChangePass(ev);
@@ -930,34 +878,34 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 //         };
 //
         function showDialogChangePass($event) {
-            var parentEl = angular.element(document.body);
+            let parentEl = angular.element(document.body);
             $mdDialog.show({
                 parent: parentEl,
                 targetEvent: $event,
                 template:
-                '<md-dialog aria-label="Xóa đơn hàng theo tháng">\n' +
-                '    <md-dialog-content class="md-dialog-content">\n' +
-                '        <h2 class="md-title ">Đối mật khẩu</h2>\n' +
-                '  <md-select ng-disabled="userLogin.name!==admin" name="user" required placeholder="Chọn tài khoản" ng-model="userPass" \n' +
-                '                           style="width: 100%;">\n' +
-                '    <md-option ng-value="user" ng-repeat="user in users">{{user.name}}</md-option>\n' +
-                '   </md-select>' +
-                '<md-input-container>\n' +
-                ' <label>Nhập mật khẩu tài khoản</label>\n' +
-                '         <input name="pass" type="password" md-maxlength="30" required  name="description"\n' +
-                '                           ng-model="passOld">\n' +
-                '          </md-input-container>' + '' +
-                '<md-input-container>\n' +
-                '                    <label>Nhập mật khẩu mới</label>\n' +
-                '                    <input name="pass"  md-maxlength="30" required  name="description"\n' +
-                '                           ng-model="passNew">\n' +
-                '                </md-input-container>' +
-                '    </md-dialog-content>\n' +
-                '    <md-dialog-actions>\n' +
-                '        <md-button ng-click="closeDialog()" class="md-primary">Hủy</md-button>\n' +
-                '        <md-button  ng-disabled="!userPass||!passOld||!passNew" ng-click="changePass()" class="md-primary"> Xác nhận</md-button>\n' +
-                '    </md-dialog-actions>\n' +
-                '</md-dialog>',
+                    '<md-dialog aria-label="Xóa đơn hàng theo tháng">\n' +
+                    '    <md-dialog-content class="md-dialog-content">\n' +
+                    '        <h2 class="md-title ">Đối mật khẩu</h2>\n' +
+                    '  <md-select ng-disabled="userLogin.name!==admin" name="user" required placeholder="Chọn tài khoản" ng-model="userPass" \n' +
+                    '                           style="width: 100%;">\n' +
+                    '    <md-option ng-value="user" ng-repeat="user in users">{{user.name}}</md-option>\n' +
+                    '   </md-select>' +
+                    '<md-input-container>\n' +
+                    ' <label>Nhập mật khẩu tài khoản</label>\n' +
+                    '         <input name="pass" type="password" md-maxlength="30" required  name="description"\n' +
+                    '                           ng-model="passOld">\n' +
+                    '          </md-input-container>' + '' +
+                    '<md-input-container>\n' +
+                    '                    <label>Nhập mật khẩu mới</label>\n' +
+                    '                    <input name="pass"  md-maxlength="30" required  name="description"\n' +
+                    '                           ng-model="passNew">\n' +
+                    '                </md-input-container>' +
+                    '    </md-dialog-content>\n' +
+                    '    <md-dialog-actions>\n' +
+                    '        <md-button ng-click="closeDialog()" class="md-primary">Hủy</md-button>\n' +
+                    '        <md-button  ng-disabled="!userPass||!passOld||!passNew" ng-click="changePass()" class="md-primary"> Xác nhận</md-button>\n' +
+                    '    </md-dialog-actions>\n' +
+                    '</md-dialog>',
                 locals: {
                     pass: $scope.pass,
                     userLogin: $scope.user,
@@ -1014,3 +962,9 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 
     });
 
+function getDateByMontg(date) {
+    const startOfMonth = moment(date).startOf('month').toDate();
+    const endOfMonth = moment(date).endOf('month').toDate();
+    console.log({start: startOfMonth, end: endOfMonth});
+    return {start: startOfMonth, end: endOfMonth}
+}

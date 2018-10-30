@@ -53,7 +53,9 @@
     flex-grow: 1;
     line-height: 0.5;
 }
-
+.page-count{
+    display: none !important;
+}
 md-dialog-actions > button {
     width: 200px;
 }

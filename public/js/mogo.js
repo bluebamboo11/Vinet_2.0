@@ -49,6 +49,31 @@ function getAllOrderByEmployee(obj, call) {
         call(data);
     })
 }
+function findOrderByCode(code, call) {
+    postData('order/findOrderByCode',{code:code}).then(function (data) {
+        call(data);
+    })
+}
+function getTotalOrder(obj, call) {
+    postData('order/getTotalOrder',obj).then(function (data) {
+        call(data);
+    })
+}
+function removeOrderInMonth(obj, call) {
+    postData('order/removeOrderInMonth',obj).then(function (data) {
+        call(data);
+    })
+}
+function removeOrderByCode(code, call) {
+    postData('order/removeOrderByCode',{code:code}).then(function (data) {
+        call(data);
+    })
+}
+function importOrder(dataImport, call) {
+    postData('order/importOrder',dataImport).then(function (data) {
+        call(data);
+    })
+}
 function postData(url = ``, data = {}) {
     // Default options are marked with *
     return fetch(url, {
