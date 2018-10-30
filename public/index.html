@@ -26,8 +26,9 @@
 
 <div class="container" ng-show="isLogin">
     <md-menu>
-        <md-button  style="text-transform: none !important;" class="md-accent md-raised admin" ng-click="$mdMenu.open($event)">
-           {{user.name}}
+        <md-button style="text-transform: none !important;" class="md-accent md-raised admin"
+                   ng-click="$mdMenu.open($event)">
+            {{user.name}}
         </md-button>
         <md-menu-content width="4">
             <md-menu-item ng-if="user.name==='admin'">
@@ -36,17 +37,17 @@
                 </md-button>
             </md-menu-item>
             <md-menu-item ng-if="user.name==='admin'">
-                <md-button  ng-click="removeHDMonth($event)">
+                <md-button ng-click="removeHDMonth($event)">
                     Xóa đơn hàng theo tháng
                 </md-button>
             </md-menu-item>
             <md-menu-item ng-if="user.name==='admin'">
-                <md-button  ng-click="removeHDCode($event)">
+                <md-button ng-click="removeHDCode($event)">
                     Xóa đơn hàng theo mã
                 </md-button>
             </md-menu-item>
             <md-menu-item ng-if="user.name==='admin'">
-                <md-button   ng-click="removePartner($event)">
+                <md-button ng-click="removePartner($event)">
                     Xóa đối tác
                 </md-button>
             </md-menu-item>
@@ -63,14 +64,14 @@
         </md-menu-content>
     </md-menu>
     <md-card class="lst-nv">
-        <md-button ng-disabled="user.name!=='admin'" class="md-raised md-primary btn-add-nv" ng-click="addNewNV($event)">
+        <md-button ng-disabled="user.name!=='admin'" class="md-raised md-primary btn-add-nv"
+                   ng-click="addNewNV($event)">
             <md-icon md-svg-src="img/ic_person_add_black_24px.svg" style="padding-right: 10px!important;"></md-icon>
             Thêm Nhân Viên
         </md-button>
         <div class="main-lst-nv">
             <md-button ng-click="selectNv(nv)" class="card-nv md-raised" ng-repeat="nv in users"
-                       ng-if="nv.name!=='admin'"
-                       ng-class="{'card-click':nv===userSelect}">{{nv.name}}
+                       ng-class="{'card-click':nv===userSelect}">{{nv.name!=='admin'?nv.name:'Tất cả'}}
             </md-button>
         </div>
     </md-card>
@@ -99,7 +100,8 @@
                             <md-option ng-repeat="partner in lstPartner" ng-value="partner">{{partner}}</md-option>
                         </md-select>
                     </md-input-container>
-                    <md-button ng-disabled="user!=='Admin'" class="md-raised md-primary " ng-click="addPartner($event)">
+                    <md-button ng-disabled="user.name!=='admin'" class="md-raised md-primary "
+                               ng-click="addPartner($event)">
                         <md-icon md-svg-src="img/ic_add_white_24px.svg"></md-icon>
                     </md-button>
                 </div>
@@ -114,26 +116,30 @@
                 </form>
                 <div class="select-hd">
                     <md-input-container flex="100">
-                        <label>Lọc hóa đơn</label>
-                        <md-select name="locHoaDon" ng-model="locDay" ng-change="locHd()" required>
-                            <md-option value="day">Ngày</md-option>
-                            <md-option value="month">Tháng</md-option>
-                            <md-option value="all">Tất cả</md-option>
-                        </md-select>
+                        <md-checkbox ng-model="isOrder" class="md-primary" ng-class="">Lọc hóa đơn
+                        </md-checkbox>
                     </md-input-container>
                 </div>
                 <div class="date-l">
-                    <md-datepicker ng-show="locDay=='month'" md-mode="month" ng-disabled="!locDay||locDay=='all'"
-                                   ng-change="locHd()" ng-model="dateSearch" md-placeholder="Nhập ngày"
-                                   md-date-locale="dateLocaleMonth"></md-datepicker>
-                    <md-datepicker ng-show="!locDay||locDay=='all'||locDay=='day'" ng-disabled="!locDay||locDay=='all'"
-                                   ng-change="locHd()" ng-model="dateSearch" md-placeholder="Nhập ngày"
-                                   md-date-locale="dateLocale"></md-datepicker>
+                    <md-input-container>
+                        <label>Ngày bắt đầu</label>
+                        <md-datepicker
+                                       ng-disabled="!isOrder"
+                                       ng-change="locHd()" ng-model="dateStart" md-placeholder="Nhập ngày"
+                                       md-date-locale="dateLocale"></md-datepicker>
+                    </md-input-container>
+                    <md-input-container >
+                        <label>Ngày kết thúc</label>
+                        <md-datepicker
+                                       ng-disabled="!isOrder"
+                                       ng-change="locHd()" ng-model="dateEnd" md-placeholder="Nhập ngày"
+                                       md-date-locale="dateLocale"></md-datepicker>
+                    </md-input-container>
                 </div>
             </div>
         </md-card>
         <div class="tb-hd">
-            <!--<dtable options="options" rows="data" class="material" on-page="paging(offset, size)"></dtable>-->
+            <dtable options="options" rows="data" class="material" on-page="paging(offset, size)"></dtable>
         </div>
         <div class="chek-total">
             <md-button class="md-raised " ng-click="getTotal()"> {{total==0?'Tổng đơn hàng':'Tổng đơn hàng : '+total}}

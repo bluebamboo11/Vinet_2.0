@@ -1,66 +1,76 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/vinet', {useNewUrlParser: true});
-mongoose.set('useFindAndModify', false);
-var userSchema = new mongoose.Schema({
-    name: String,
-    pass: String
-});
-var user = mongoose.model('user', userSchema);
-// user.create({name:'admin',pass:'1234'});
-router.get('/', function (req, res, next) {
-    res.sendFile('index.html', {root: __dirname})
-});
 
-router.post('/addUser', function (req, res, next) {
+var orderSchema = new mongoose.Schema({
+    code: String,
+    partner:String,
+    employee:String,
+    phone:String
+},{ timestamps: { createdAt: 'created_at' } });
+var order = mongoose.model('order', orderSchema);
+
+router.post('/addOrder', function (req, res, next) {
     if (req.body) {
-        user.find({}, function (err, doc) {
-            let exits = false;
-            doc.forEach(function (user) {
-                if (user.name === req.body.name) {
-                    exits = true;
-                    res.send({ok: false})
-                }
-            });
-            if (!exits) {
-                user.create({name: req.body.name, pass: '1234'}, function (err, small) {
-                    res.send({ok: true, data: small});
-                });
+        const obj = req.body;
+        console.log(obj);
+        order.findOne({code:obj.code},{}, function (err, doc) {
+            if(doc){
+                res.send({order:doc,ok:false})
+            }else {
+                order.create(obj,function (err, docNew) {
+                    res.send({order:docNew,ok:true})
+                })
             }
         })
     } else {
         next();
     }
+});
+// router.post('/getAllOrder', function (req, res, next) {
+//     let obj ={};
+//     if(req.body.partner){
+//         obj.partner =  req.body.partner;
+//     }
+//     if(req.body.all){
+//         order.find(obj).sort("-created_at").limit( 10 ).exec(function (err, doc) {
+//             res.send(doc);
+//         })
+//     }else {
+//         if(req.body.start){
+//             obj.created_at =  {"$gte": req.body.start, "$lt": req.body.end};
+//             order.find(obj).sort("-created_at").limit( 10 ).exec(function (err, doc) {
+//                 res.send(doc);
+//             })
+//         }
+//     }
+//
+// });
+router.post('/getAllOrderByEmployee', function (req, res, next) {
+    if(req.body){
+        let obj ={};
+        if(req.body.partner){
+            obj.partner =  req.body.partner;
+        }
+        if(req.body.name){
+            obj.employee = req.body.name;
+        }
+        if(req.body.all){
+            order.find(obj).sort("-created_at").limit( 20 ).exec(function (err, doc) {
+                res.send(doc);
+            })
+        }else {
+            if(req.body.start){
+                obj.created_at =  {"$gte": req.body.start, "$lt": req.body.end};
+                order.find(obj).sort("-created_at").limit( 20 ).exec( function (err, doc) {
+                    res.send(doc);
+                })
+            }
+        }
 
-});
-router.get('/getAllUser', function (req, res, next) {
-    user.find({}, function (err, doc) {
-        res.send(doc);
-    })
-});
-router.post('/updatePass', function (req, res, next) {
-    if (req.body) {
-        const userChange = req.body;
-        user.findByIdAndUpdate(userChange.user._id,{pass:userChange.user.pass},{new:true}, function (err, doc) {
-            console.log(doc);
-            console.log(err);
-            res.send({ok:true})
-        })
-    } else {
+    }else {
         next();
     }
-});
 
-router.post('/removeUser', function (req, res, next) {
-    if (req.body) {
-        const userChange = req.body;
-        console.log(userChange);
-        user.findOneAndRemove({name:userChange.name},{}, function (err, doc) {
-            res.send({ok:true})
-        })
-    } else {
-        next();
-    }
 });
 module.exports = router;

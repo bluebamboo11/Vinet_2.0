@@ -159,10 +159,11 @@ body {
 }
 
 .select-hd {
+    padding-top: 6px;
     position: absolute;
     left: 277px;
     margin-left: 45px;
-    width: 200px;
+    width: 120px;
     display: inline-block;
 
 }
@@ -183,12 +184,15 @@ md-select {
 md-input-container {
     width: 100%;
 }
-
+.date-l md-input-container {
+    width: 200px;
+}
 .date-l {
+    display: flex;
     top: 0;
     position: absolute;
-    left: 595px;
-    width: 245px;
+    left: 450px;
+    width: 500px;
 }
 
 .dt {
@@ -268,9 +272,6 @@ md-input-container {
     font-size: 20px;
 }
 
-.page-count {
-    display: none !important;
-}
 
 .chek-total > button {
     width: 180px;

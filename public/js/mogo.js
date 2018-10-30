@@ -1,15 +1,51 @@
-function updatePass(user,callback) {
-    postData('updatePass',{user}).then(function (data) {
+function updatePass(user, callback) {
+    postData('updatePass', {user}).then(function (data) {
         callback(data);
     })
 }
-function addUser(name,call) {
-    postData('addUser',{name:name}).then(function (data) {
+
+function addUser(name, call) {
+    postData('addUser', {name: name}).then(function (data) {
         call(data);
     })
 }
-function removeUser(name,call) {
-    postData('removeUser',{name:name}).then(function (data) {
+
+function removeUser(name, call) {
+    postData('removeUser', {name: name}).then(function (data) {
+        call(data);
+    })
+}
+
+function addPartner(name, call) {
+    postData('partner/addPartner', {name: name}).then(function (data) {
+        call(data);
+    })
+}
+
+function getPartner(call) {
+    getData('partner/getPartner').then(function (data) {
+        call(data);
+    })
+}
+
+function removePartner(partner, call) {
+    postData('partner/removePartner', {partner: partner}).then(function (data) {
+        call(data);
+    })
+}
+
+function addOrder(order, call) {
+    postData('order/addOrder',order).then(function (data) {
+        call(data);
+    })
+}
+function getAllOrder(obj, call) {
+    postData('order/getAllOrder',obj).then(function (data) {
+        call(data);
+    })
+}
+function getAllOrderByEmployee(obj, call) {
+    postData('order/getAllOrderByEmployee',obj).then(function (data) {
         call(data);
     })
 }
