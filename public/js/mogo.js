@@ -74,6 +74,11 @@ function importOrder(dataImport, call) {
         call(data);
     })
 }
+function importBlackList(dataImport, call) {
+    postData('order/importBlackList',dataImport).then(function (data) {
+        call(data);
+    })
+}
 function postData(url = ``, data = {}) {
     // Default options are marked with *
     return fetch(url, {

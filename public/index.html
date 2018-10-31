@@ -116,8 +116,7 @@
                 </form>
                 <div class="select-hd">
                     <md-input-container flex="100">
-                        <md-checkbox ng-model="isOrder" class="md-primary" ng-class="">Lọc hóa đơn
-                        </md-checkbox>
+                        <md-checkbox ng-model="isOrder" class="md-primary" ng-change="locHd()">Lọc hóa đơn</md-checkbox>
                     </md-input-container>
                 </div>
                 <div class="date-l">
@@ -148,9 +147,8 @@
         <div class="bot-bnt">
             <input type="file" style="display: none">
             <md-card class="l-k">
-                <md-checkbox ng-model="blackLst" class="md-primary" ng-change="locHd()" ng-class="">Lọc khách
-                    hàng đen
-                </md-checkbox>
+                <md-checkbox ng-model="blackLst" class="md-primary" ng-change="locHd()" >KH đen</md-checkbox>
+                <md-checkbox ng-model="virtualOrder" class="md-primary" ng-change="locHd()" style="margin-left: 28px!important;">Đơn ảo</md-checkbox>
             </md-card>
             <md-button ngf-select="upHd(file,$event)" ng-model="file" ngf-accept="'.csv'" class="md-raised btn-nomal"
                        md-colors="{background: 'green'}">

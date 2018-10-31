@@ -6,25 +6,28 @@ var orderSchema = new mongoose.Schema({
     code: String,
     partner: String,
     employee: String,
-    phone: String
+    isBlack: {type: Boolean, default: false},
+    phone: {type: String, ref: 'phone'}
 }, {timestamps: {createdAt: 'created_at'}});
+
+var phoneSchema = new mongoose.Schema({
+    _id: String,
+}, {timestamps: {createdAt: 'created_at'}});
+
 var order = mongoose.model('order', orderSchema);
+var Phone = mongoose.model('phone', phoneSchema);
 
 router.post('/addOrder', function (req, res, next) {
     if (req.body) {
         const obj = req.body;
-        console.log(obj);
-        order.findOne({code: obj.code}, {}, function (err, doc) {
-            if (doc.employee) {
-                res.send({order: doc, ok: false})
-            } else {
-                doc.employee =obj.employee;
-                doc.partner =obj.partner;
-                doc.save(function (err, docNew) {
-                    res.send({order: docNew, ok: true})
-                })
+        Phone.findOne({_id: obj.phone}, function (err, phone) {
+            if (phone) {
+                obj.isBlack = true;
             }
-        })
+            order.findOneAndUpdate({code: obj.code}, obj,{upsert: true,new:true}, function (err, doc) {
+                res.send({order: doc, ok: true})
+            })
+        });
     } else {
         next();
     }
@@ -57,8 +60,13 @@ router.post('/getAllOrderByEmployee', function (req, res, next) {
         if (req.body.end && !req.body.start) {
             obj.created_at = {'$lt': req.body.end};
         }
+        if (req.body.isBlack) {
+            obj.isBlack = true;
+        }
+        if (req.body.virtualOrder) {
+            obj.employee = null;
+        }
         if (req.body.isFull) {
-            console.log(obj);
             order.find(obj).sort("-created_at").exec(function (err, doc) {
                 res.send(doc);
             })
@@ -85,6 +93,12 @@ router.post('/getTotalOrder', function (req, res, next) {
         }
         if (req.body.end && !req.body.start) {
             obj.created_at = {'$lt': req.body.end};
+        }
+        if (req.body.isBlack) {
+            obj.isBlack = true;
+        }
+        if (req.body.virtualOrder) {
+            obj.employee = null;
         }
         order.countDocuments(obj, function (err, count) {
             res.send({count: count});
@@ -121,13 +135,33 @@ router.post('/removeOrderByCode', function (req, res, next) {
 });
 router.post('/importOrder', function (req, res, next) {
     if (req.body) {
-        console.log(req.body);
-        req.body.forEach(function (data) {
-            order.findOneAndUpdate({code:data.code},data,{upsert:true},function () {
-
+        req.body.forEach(function (data, index) {
+            Phone.findOne({_id: data.phone}, function (err, doc) {
+                if (doc) {
+                    data.isBlack = true;
+                }
+                order.findOneAndUpdate({code: data.code}, data, {upsert: true}, function () {
+                    if (index === req.body.length - 1) {
+                        res.send({ok: true});
+                    }
+                })
             })
         });
-        res.send({ok: true});
+    } else {
+        res.send({ok: false});
+    }
+});
+router.post('/importBlackList', function (req, res, next) {
+    if (req.body) {
+        req.body.forEach(function (data, index) {
+            order.findOneAndUpdate({phone: data.phone}, {isBlack: true}, {}, function () {
+            });
+            Phone.findOneAndUpdate({_id: data.phone}, {_id: data.phone}, {upsert: true}, function () {
+                if (index === req.body.length - 1) {
+                    res.send({ok: true});
+                }
+            });
+        });
     } else {
         res.send({ok: false});
     }

@@ -269,7 +269,7 @@ md-input-container {
 
 .chek-total {
     margin-left: 46px;
-    margin-top: 30px;
+    margin-top: 33px;
     float: left;
     font-size: 20px;
 }
@@ -289,7 +289,7 @@ md-input-container {
     padding-top: 7px;
     height: 36px;
     padding-left: 20px;
-    width: 200px !important;
+    width: 230px !important;
     display: inline-block;
 }
 
