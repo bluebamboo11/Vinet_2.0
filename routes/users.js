@@ -1,8 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-// mongoose.connect('mongodb://localhost/vinet', {useNewUrlParser: true});
-// mongoose.set('useFindAndModify', false);
 var userSchema = new mongoose.Schema({
     name: String,
     pass: String

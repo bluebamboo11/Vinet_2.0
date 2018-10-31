@@ -678,7 +678,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 $scope.users = users;
                 $scope.admin = 'admin';
                 $scope.changePass = function () {
-                    if ($scope.userPass.pass === $scope.passOld) {
+                    if ($scope.userLogin.pass === $scope.passOld) {
                         $mdDialog.hide();
                         $scope.userPass.pass = $scope.passNew;
                         updatePass($scope.userPass, function (value) {
