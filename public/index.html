@@ -197,5 +197,10 @@
         </md-card-content>
     </md-card>
 </div>
+<div class="loading-all" ng-if="isLoading">
+    <md-card style="padding: 30px" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
+        <md-progress-circular  md-diameter="96"></md-progress-circular>
+    </md-card>
+</div>
 </body>
 </html>

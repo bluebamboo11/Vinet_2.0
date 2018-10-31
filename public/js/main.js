@@ -238,7 +238,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 
             });
         };
-//
+
         $scope.upHd = function (file, ev) {
             if (file) {
                 let confirm = $mdDialog.confirm()
@@ -253,6 +253,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     Papa.parse(file, {
                         header: true,
                         complete: function (results, file) {
+                            $scope.isLoading = true;
                             let dataImport = [];
                             for (let i = 0; i < results.data.length; i++) {
                                 if (results.data[i]['Order Number'] && results.data[i]['Shipping Phone Number'] && !isNaN(results.data[i]['Shipping Phone Number'])) {
@@ -263,6 +264,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                 }
                             }
                             importOrder(dataImport, function (data) {
+                                $scope.isLoading = false;
                                 if (data.ok) {
                                     getOrderByEmployee();
                                 }
@@ -286,6 +288,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 Papa.parse(file, {
                     header: true,
                     complete: function (results, file) {
+                        $scope.isLoading = true;
                         let dataImport = [];
                         for (let i = 0; i < results.data.length; i++) {
                             if (results.data[i]['Order Number'] && results.data[i]['Shipping Phone Number'] && !isNaN(results.data[i]['Shipping Phone Number'])) {
@@ -296,6 +299,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                             }
                         }
                         importBlackList(dataImport, function (data) {
+                            $scope.isLoading = false;
                             if (data.ok) {
                                 getOrderByEmployee();
                             }
