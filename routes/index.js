@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-
 var orderSchema = new mongoose.Schema({
     code: String,
     partner: String,
@@ -18,21 +17,22 @@ var order = mongoose.model('order', orderSchema);
 var Phone = mongoose.model('phone', phoneSchema);
 
 router.post('/addOrder', function (req, res, next) {
-    if (req.body) {
-        const obj = req.body;
-        Phone.findOne({_id: obj.phone}, function (err, phone) {
-            if (phone) {
-                obj.isBlack = true;
-            }
-            order.findOneAndUpdate({code: obj.code}, obj,{upsert: true,new:true}, function (err, doc) {
-                res.send({order: doc, ok: true})
-            })
-        });
-    } else {
-        next();
-    }
+        if (req.body) {
+            const obj = req.body;
+            Phone.findOne({_id: obj.phone}, function (err, phone) {
+                if (phone) {
+                    obj.isBlack = true;
+                }
+                order.findOneAndUpdate({code: obj.code}, obj,{upsert: true,new:true}, function (err, doc) {
+                    res.send({order: doc, ok: true})
+                })
+            });
+        } else {
+            next();
+        }
 });
 router.post('/findOrderByCode', function (req, res, next) {
+
     if (req.body) {
         order.findOne({code: req.body.code}, function (err, doc) {
             if (doc) {

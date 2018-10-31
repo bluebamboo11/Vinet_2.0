@@ -20,9 +20,9 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
         $scope.blackLst = false;
         $scope.locDay = 'month';
         $scope.users = [];
-        $scope.user = {name: 'admin', pass: '1234'};
+        $scope.user = {};
         $scope.userSelect = {};
-        $scope.isLogin = true;
+        $scope.isLogin = false;
         $scope.removeHDCode = function (ev) {
             let confirm = $mdDialog.prompt()
                 .title('Xóa đơn hàng theo mã')
@@ -82,7 +82,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 removeUser(result, function () {
                     for (let i = 0; i < $scope.users.length; i++) {
                         if ($scope.users[i].name === result) {
-                            $scope.users.splice(i, 1)
+                            $scope.users.splice(i, 1);
                             $scope.$digest();
                         }
                     }
@@ -124,7 +124,8 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
         $scope.getNv = function () {
             return getData('getAllUser').then((data) => {
                 $scope.users = data;
-                $scope.userSelect = data[0]
+                $scope.userSelect = data[0];
+                getOrderByEmployee();
             });
         };
         $scope.addPartner = function (ev) {
@@ -534,8 +535,6 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 }
             });
         }
-
-        getOrderByEmployee();
 
         function getDate() {
             let obj = {};

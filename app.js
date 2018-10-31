@@ -9,7 +9,7 @@ mongoose.set('useFindAndModify', false);
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var usersPartner = require('./routes/partner');
-
+var loggerFile = require('./logger');
 var app = express();
 
 // view engine setup
@@ -29,5 +29,8 @@ app.use('/', usersRouter);
 
 // error handler
 
-
+app.use(function(err, req, res, next) {
+    console.error(err);
+    loggerFile.info(req.originalUrl +'\n'+err.stack)
+});
 module.exports = app;
