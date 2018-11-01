@@ -6,9 +6,15 @@ var userSchema = new mongoose.Schema({
     pass: String
 });
 var user = mongoose.model('user', userSchema);
-// user.create({name:'admin',pass:'1234'});
+
 router.get('/', function (req, res, next) {
     res.sendFile('index.html', {root: __dirname})
+});
+
+router.get('/add-admin', function (req, res, next) {
+    user.create({name:'admin',pass:'1234'},function () {
+        res.send({ok:true});
+    });
 });
 
 router.post('/addUser', function (req, res, next) {
