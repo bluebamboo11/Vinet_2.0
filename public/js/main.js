@@ -1,7 +1,7 @@
 // Initialize Firebase
 
 angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages'])
-    .controller('AppCtrl', function ($scope, $http, $mdDialog, $mdToast) {
+    .controller('AppCtrl', function ($scope, $http, $mdDialog, $mdToast,$timeout) {
         let all = 'Tất cả';
         $scope.isOrder = true;
         let datePicker = getDateByMontg(new Date());
@@ -264,10 +264,12 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                 }
                             }
                             importOrder(dataImport, function (data) {
-                                $scope.isLoading = false;
-                                if (data.ok) {
-                                    getOrderByEmployee();
-                                }
+                                $timeout(function () {
+                                    $scope.isLoading = false;
+                                    if (data.ok) {
+                                        getOrderByEmployee();
+                                    }
+                                },1000)
                             })
                         }
                     });

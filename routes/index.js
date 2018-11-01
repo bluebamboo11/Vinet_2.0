@@ -17,19 +17,19 @@ var order = mongoose.model('order', orderSchema);
 var Phone = mongoose.model('phone', phoneSchema);
 
 router.post('/addOrder', function (req, res, next) {
-        if (req.body) {
-            const obj = req.body;
-            Phone.findOne({_id: obj.phone}, function (err, phone) {
-                if (phone) {
-                    obj.isBlack = true;
-                }
-                order.findOneAndUpdate({code: obj.code}, obj,{upsert: true,new:true}, function (err, doc) {
-                    res.send({order: doc, ok: true})
-                })
-            });
-        } else {
-            next();
-        }
+    if (req.body) {
+        const obj = req.body;
+        Phone.findOne({_id: obj.phone}, function (err, phone) {
+            if (phone) {
+                obj.isBlack = true;
+            }
+            order.findOneAndUpdate({code: obj.code}, obj, {upsert: true, new: true}, function (err, doc) {
+                res.send({order: doc, ok: true})
+            })
+        });
+    } else {
+        next();
+    }
 });
 router.post('/findOrderByCode', function (req, res, next) {
 
@@ -153,10 +153,11 @@ router.post('/importOrder', function (req, res, next) {
 });
 router.post('/importBlackList', function (req, res, next) {
     if (req.body) {
-        req.body.forEach(function (data, index) {
-            order.findOneAndUpdate({phone: data.phone}, {isBlack: true}, {}, function () {
+        let listPhone = initPhone(req.body);
+        listPhone.forEach(function (phone, index) {
+            order.findOneAndUpdate({phone: phone}, {isBlack: true}, {}, function () {
             });
-            Phone.findOneAndUpdate({_id: data.phone}, {_id: data.phone}, {upsert: true}, function () {
+            Phone.findOneAndUpdate({_id: phone}, {_id: phone}, {upsert: true}, function () {
                 if (index === req.body.length - 1) {
                     res.send({ok: true});
                 }
@@ -166,4 +167,60 @@ router.post('/importBlackList', function (req, res, next) {
         res.send({ok: false});
     }
 });
+
+function initPhone(listPhone) {
+    let listPhoneNew = [];
+    for(let black of listPhone) {
+        let phone = black.phone;
+        if (phone.slice(0, 3) == '840') {
+            addPhone( phone.slice(3, phone.length),listPhoneNew);
+            break;
+        }
+        if(phone.slice(0,2)=='84'){
+            addPhone( phone.slice(2, phone.length),listPhoneNew);
+            break;
+        }
+        if(phone.slice(0,1)=='0'){
+            addPhone( phone.slice(1, phone.length),listPhoneNew);
+            break;
+        }
+        if(phone.slice(0,4)=='+840'){
+            addPhone( phone.slice(4, phone.length),listPhoneNew);
+            break;
+        }
+        if(phone.slice(0,3)=='+84'){
+            addPhone( phone.slice(3, phone.length),listPhoneNew);
+            break;
+        }
+        addPhone( phone,listPhoneNew);
+    }
+    return listPhoneNew;
+}
+
+function addPhone(phone, listPhone) {
+    if (listPhone.indexOf(phone) === -1) {
+        listPhone.push(phone)
+    }
+    let newPhone = '84' + phone;
+    if (listPhone.indexOf(newPhone) === -1) {
+        listPhone.push(newPhone)
+    }
+    newPhone = '0' + phone;
+    if (listPhone.indexOf(newPhone) === -1) {
+        listPhone.push(newPhone)
+    }
+    newPhone = '840' + phone;
+    if (listPhone.indexOf(newPhone) === -1) {
+        listPhone.push(newPhone)
+    }
+    newPhone = '+840' + phone;
+    if (listPhone.indexOf(newPhone) === -1) {
+        listPhone.push(newPhone)
+    }
+    newPhone = '84' + phone;
+    if (listPhone.indexOf(newPhone) === -1) {
+        listPhone.push(newPhone)
+    }
+}
+
 module.exports = router;
