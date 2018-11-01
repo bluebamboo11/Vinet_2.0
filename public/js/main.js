@@ -263,6 +263,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                     })
                                 }
                             }
+                            $scope.$digest();
                             importOrder(dataImport, function (data) {
                                 $timeout(function () {
                                     $scope.isLoading = false;
@@ -276,7 +277,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 });
             }
         };
-
+        $scope.isLoading = false;
         $scope.upBlackLst = function (file, ev) {
             let confirm = $mdDialog.confirm()
                 .parent(angular.element(document.body))
@@ -300,11 +301,14 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                 })
                             }
                         }
+                        $scope.$digest();
                         importBlackList(dataImport, function (data) {
-                            $scope.isLoading = false;
-                            if (data.ok) {
-                                getOrderByEmployee();
-                            }
+                            $timeout(function () {
+                                $scope.isLoading = false;
+                                if (data.ok) {
+                                    getOrderByEmployee();
+                                }
+                            },1000)
                         })
                     }
                 });
