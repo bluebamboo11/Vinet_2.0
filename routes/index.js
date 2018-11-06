@@ -23,9 +23,9 @@ router.post('/addOrder', function (req, res, next) {
             if (phone) {
                 obj.isBlack = true;
             }
-            order.findOne({code: obj.code}, function (err, doc) {
-                if (doc) {
-                    res.send({ok: false, order: doc})
+            order.findOne({code: obj.code}, function (err, doc1) {
+                if (doc1) {
+                    res.send({ok: false, order: doc1})
                 } else {
                     order.create(obj, function (err, doc) {
                         res.send({ok: true, order: doc})
