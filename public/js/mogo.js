@@ -39,6 +39,11 @@ function addOrder(order, call) {
         call(data);
     })
 }
+function addBlackPhone(phone, call) {
+    postData('order/addBlackPhone',phone).then(function (data) {
+        call(data);
+    })
+}
 function getAllOrder(obj, call) {
     postData('order/getAllOrder',obj).then(function (data) {
         call(data);

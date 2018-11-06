@@ -180,7 +180,7 @@ router.post('/importBlackList', function (req, res, next) {
             order.findOneAndUpdate({phone: phone}, {isBlack: true}, {}, function () {
             });
             Phone.findOneAndUpdate({_id: phone}, {_id: phone}, {upsert: true}, function () {
-                if (index === req.body.length - 1) {
+                if (index === listPhone.length - 1) {
                     res.send({ok: true});
                 }
             });
@@ -189,7 +189,22 @@ router.post('/importBlackList', function (req, res, next) {
         res.send({ok: false});
     }
 });
-
+router.post('/addBlackPhone', function (req, res, next) {
+    if (req.body) {
+        let listPhone = initPhone([req.body]);
+        listPhone.forEach(function (phone, index) {
+            order.findOneAndUpdate({phone: phone}, {isBlack: true}, {}, function () {
+            });
+            Phone.findOneAndUpdate({_id: phone}, {_id: phone}, {upsert: true}, function () {
+                if (index === listPhone.length - 1) {
+                    res.send({ok: true});
+                }
+            });
+        });
+    } else {
+        res.send({ok: false});
+    }
+});
 function initPhone(listPhone) {
     let listPhoneNew = [];
     for (let black of listPhone) {

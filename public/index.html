@@ -124,16 +124,16 @@
                     <md-input-container>
                         <label>Ngày bắt đầu</label>
                         <md-datepicker
-                                       ng-disabled="!isOrder"
-                                       ng-change="locHd()" ng-model="dateStart" md-placeholder="Nhập ngày"
-                                       md-date-locale="dateLocale"></md-datepicker>
+                                ng-disabled="!isOrder"
+                                ng-change="locHd()" ng-model="dateStart" md-placeholder="Nhập ngày"
+                                md-date-locale="dateLocale"></md-datepicker>
                     </md-input-container>
-                    <md-input-container >
+                    <md-input-container>
                         <label>Ngày kết thúc</label>
                         <md-datepicker
-                                       ng-disabled="!isOrder"
-                                       ng-change="locHd()" ng-model="dateEnd" md-placeholder="Nhập ngày"
-                                       md-date-locale="dateLocale"></md-datepicker>
+                                ng-disabled="!isOrder"
+                                ng-change="locHd()" ng-model="dateEnd" md-placeholder="Nhập ngày"
+                                md-date-locale="dateLocale"></md-datepicker>
                     </md-input-container>
                 </div>
             </div>
@@ -141,22 +141,27 @@
         <div class="tb-hd">
             <dtable options="options" rows="data" class="material" on-page="paging(offset, size)"></dtable>
             <div class="chek-total">
-                <md-button class="md-raised " ng-click="getTotal()"> {{total==0?'Tổng đơn hàng':'Tổng đơn hàng : '+total}}
+                <md-button class="md-raised " ng-click="getTotal()"> {{total==0?'Tổng đơn hàng':'Tổng đơn hàng :'+total}}
                 </md-button>
             </div>
+            <md-card class="l-k">
+                <md-checkbox ng-model="blackLst" class="md-primary" ng-change="locHd()">KH đen</md-checkbox>
+                <md-checkbox ng-model="virtualOrder" class="md-primary" ng-change="locHd()"
+                             style="margin-left: 28px!important;">Đơn ảo
+                </md-checkbox>
+            </md-card>
         </div>
-        <div class="find-order">
-            <md-button class="md-raised btn-nomal" ng-click="showFindBlackOrder()"  md-colors="{background: 'blue-grey'}" ngf-accept="'.csv'">
+        <div class="bot-bnt">
+            <md-button class="md-raised btn-nomal" ng-click="showFindBlackOrder()" md-colors="{background: 'green'}"
+                       ngf-accept="'.csv'">
                 <md-icon md-svg-src="img/ic_search_white_24px.svg"></md-icon>
                 Tìm đơn hàng đen
             </md-button>
-        </div>
-        <div class="bot-bnt">
+            <md-button  ngf-accept="'.csv'" class="md-raised btn-nomal" md-colors="{background: 'blue-grey'}" ng-click="showAddPhoneBlack()">
+                <md-icon md-svg-src="img/ic_add_circle_white_24px.svg"></md-icon>
+                Thêm SDT đen
+            </md-button>
             <input type="file" style="display: none">
-            <md-card class="l-k">
-                <md-checkbox ng-model="blackLst" class="md-primary" ng-change="locHd()" >KH đen</md-checkbox>
-                <md-checkbox ng-model="virtualOrder" class="md-primary" ng-change="locHd()" style="margin-left: 28px!important;">Đơn ảo</md-checkbox>
-            </md-card>
             <md-button ngf-select="upHd(file,$event)" ng-model="file" ngf-accept="'.csv'" class="md-raised btn-nomal"
                        md-colors="{background: 'green'}">
                 <md-icon md-svg-src="img/ic_file_upload_black_24px.svg"></md-icon>
@@ -206,7 +211,7 @@
 </div>
 <div class="loading-all" ng-if="isLoading">
     <md-card style="padding: 30px" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
-        <md-progress-circular  md-diameter="96"></md-progress-circular>
+        <md-progress-circular md-diameter="96"></md-progress-circular>
     </md-card>
 </div>
 </body>

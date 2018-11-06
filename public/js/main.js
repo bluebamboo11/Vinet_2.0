@@ -115,6 +115,26 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 });
             });
         };
+        $scope.showAddPhoneBlack = function (ev) {
+            let confirm = $mdDialog.prompt()
+                .title('Thêm số điện thoại đen')
+                .textContent('Nhập số điện thoại')
+                .placeholder('nhập ...')
+                .ariaLabel('Số điện thoại')
+                .targetEvent(ev)
+                .required(true)
+                .ok('Thêm')
+                .cancel('Hủy');
+            $mdDialog.show(confirm).then(function (result) {
+                addBlackPhone({phone: result}, function (data) {
+                    if (data.ok) {
+                        toast('Thêm thành công');
+                    }else {
+                        toast('Thêm thất bại');
+                    }
+                });
+            });
+        };
         $scope.login = function () {
             if ($scope.user && $scope.pass) {
                 $scope.showLoad = true;
@@ -124,17 +144,12 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     $scope.showLoad = false;
                 }
                 else {
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .textContent('Mật khẩu không đúng')
-                            .position('top left')
-                            .hideDelay(3000)
-                    );
+                    toast('Mật khẩu không đúng');
                     $scope.showLoad = false;
                 }
             }
-        }
-        ;
+        };
+
         $scope.dateLocale = {
             formatDate: function (date) {
                 let m = moment(date);
@@ -170,19 +185,9 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     if (doc.ok) {
                         $scope.lstPartner.push(result);
                         $scope.$digest();
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Thêm đối tác thành công')
-                                .position('top left')
-                                .hideDelay(3000)
-                        );
+                        toast('Thêm đối tác thành công');
                     } else {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Tên đối tác đã tồn tại')
-                                .position('top left')
-                                .hideDelay(3000)
-                        );
+                        toast('Tên đối tác đã tồn tại');
                     }
                 });
 
@@ -224,12 +229,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             $mdDialog.show(confirm).then(function (result) {
                 addUser(result, function (data) {
                     if (!data.ok) {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Tên nhân viên đã tồn tại')
-                                .position('top left')
-                                .hideDelay(3000)
-                        );
+                        toast('Tên nhân viên đã tồn tại');
                     } else {
                         $scope.users.push(data.data);
                         $scope.$digest();
@@ -269,6 +269,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                 $timeout(function () {
                                     $scope.isLoading = false;
                                     if (data.ok) {
+                                        toast('Tải lên thành công');
                                         getOrderByEmployee();
                                     }
                                 }, 1000)
@@ -306,6 +307,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                         importBlackList(dataImport, function (data) {
                             $timeout(function () {
                                 $scope.isLoading = false;
+                                toast('Tải lên thành công');
                                 if (data.ok) {
                                     getOrderByEmployee();
                                 }
@@ -403,21 +405,11 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     })
                 } else {
                     playAudio();
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .textContent('Mã không hợp lệ')
-                            .position('top left')
-                            .hideDelay(3000)
-                    );
+                    toast('Mã không hợp lệ')
                 }
             } else {
                 playAudio();
-                $mdToast.show(
-                    $mdToast.simple()
-                        .textContent('Mã đơn hàng không được để trống')
-                        .position('top left')
-                        .hideDelay(3000)
-                );
+                toast('Mã đơn hàng không được để trống');
             }
 
         };
@@ -684,7 +676,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     $mdDialog.cancel();
                 };
                 $scope.searchBlackOrder = function () {
-                    $scope.showLoad =true;
+                    $scope.showLoad = true;
                     let obj = {phone: $scope.searchKey};
                     if ($scope.modeFind === 'code') {
                         obj = {code: $scope.searchKey};
@@ -692,7 +684,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     findOrderBlack(obj, function (data) {
                         $scope.data = [];
                         $timeout(function () {
-                            $scope.showLoad =false;
+                            $scope.showLoad = false;
                         }, 500);
                         data.forEach(function (order) {
                             $scope.data.push({
@@ -765,21 +757,11 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                         $mdDialog.hide();
                         $scope.userPass.pass = $scope.passNew;
                         updatePass($scope.userPass, function (value) {
-                            $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent('Đổi mật khẩu thành công')
-                                    .position('top left')
-                                    .hideDelay(3000)
-                            );
+                            toast('Đổi mật khẩu thành công');
                         });
                     }
                     else {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Mật khẩu không chính xác')
-                                .position('top left')
-                                .hideDelay(3000)
-                        );
+                        toast('Mật khẩu không chính xác');
                     }
                 };
 
@@ -790,6 +772,15 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             }
 
 
+        }
+
+        function toast(text) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .textContent(text)
+                    .position('top left')
+                    .hideDelay(3000)
+            );
         }
 
         $scope.getNv();
