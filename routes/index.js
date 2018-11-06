@@ -23,8 +23,14 @@ router.post('/addOrder', function (req, res, next) {
             if (phone) {
                 obj.isBlack = true;
             }
-            order.findOneAndUpdate({code: obj.code}, obj, {upsert: true, new: true}, function (err, doc) {
-                res.send({order: doc, ok: true})
+            order.findOne({code: obj.code}, function (err, doc) {
+                if (doc) {
+                    res.send({ok: false, order: doc})
+                } else {
+                    order.create(obj, function (err, doc) {
+                        res.send({ok: true, order: doc})
+                    });
+                }
             })
         });
     } else {
@@ -47,7 +53,7 @@ router.post('/findOrderByCode', function (req, res, next) {
 });
 router.post('/findOrderBlack', function (req, res, next) {
     if (req.body) {
-        let obj = {isBlack:true};
+        let obj = {isBlack: true};
         if (req.body.phone) {
             let listPhone = initPhone([req.body]);
             obj.phone = {$in: listPhone};
