@@ -50,7 +50,6 @@ router.post('/findOrderBlack', function (req, res, next) {
         let obj = {};
         if (req.body.phone) {
             let listPhone = initPhone([req.body]);
-            console.log(listPhone);
             obj.phone = {$in: listPhone};
         } else {
             obj.code = req.body.code
