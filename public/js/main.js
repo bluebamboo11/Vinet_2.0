@@ -1,5 +1,31 @@
 // Initialize Firebase
-
+let options = {
+    emptyMessage: 'Không có đơn hàng ',
+    rowHeight: 50,
+    headerHeight: 40,
+    footerHeight: 50,
+    columns: [{
+        name: "Mã Đơn hàng",
+        prop: "code",
+        width: 200
+    }, {
+        name: "Ngày",
+        prop: "date"
+    }, {
+        name: "Số điện thoại",
+        prop: "phone"
+    }, {
+        name: "Nhân viên",
+        prop: "nv"
+    }, {
+        name: "Đối tác",
+        prop: "partner"
+    }],
+    columnMode: 'force',
+    paging: {
+        externalPaging: true
+    }
+};
 angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages'])
     .controller('AppCtrl', function ($scope, $http, $mdDialog, $mdToast,$timeout) {
         let all = 'Tất cả';
@@ -162,33 +188,8 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 
             });
         };
-        $scope.options = {
-            emptyMessage: 'Không có đơn hàng ',
-            rowHeight: 50,
-            headerHeight: 40,
-            footerHeight: 50,
-            columns: [{
-                name: "Mã Đơn hàng",
-                prop: "code",
-                width: 200
-            }, {
-                name: "Ngày",
-                prop: "date"
-            }, {
-                name: "Số điện thoại",
-                prop: "phone"
-            }, {
-                name: "Nhân viên",
-                prop: "nv"
-            }, {
-                name: "Đối tác",
-                prop: "partner"
-            }],
-            columnMode: 'force',
-            paging: {
-                externalPaging: true
-            }
-        };
+        $scope.options = angular.copy(options);
+
         $scope.paging = function (offset, size) {
             if ($scope.data.length > size && offset === parseInt($scope.data.length / size)) {
                 let obj = getDate();
@@ -199,7 +200,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                             code: order.code,
                             date: moment(order.created_at).format('DD-MM-YYYY H:mm'),
                             created_at: order.created_at,
-                            phone: order.phone?order.phone._id:'',
+                            phone: order.phone ? order.phone : '',
                             nv: order.employee,
                             partner: order.partner
                         })
@@ -379,7 +380,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                     code: order.code,
                                     date: moment(order.created_at).format('DD-MM-YYYY H:mm'),
                                     created_at: order.created_at,
-                                    phone: order.phone?order.phone._id:'',
+                                    phone: order.phone ? order.phone: '',
                                     nv: order.employee,
                                     partner: order.partner
                                 });
@@ -471,7 +472,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
         };
         $scope.locHd = function () {
 
-                getOrderByEmployee();
+            getOrderByEmployee();
 
         };
         $scope.selectPartner = function () {
@@ -527,8 +528,6 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
         };
 
 
-
-
         function updatePhone(ref, name, phone, code) {
             database.ref(ref + name + '/order/' + code).once('value').then(function (snapshot) {
                 if (snapshot.val()) {
@@ -554,10 +553,10 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             if ($scope.userSelect.name !== 'admin') {
                 obj.name = $scope.userSelect.name;
             }
-            if($scope.blackLst){
+            if ($scope.blackLst) {
                 obj.isBlack = true;
             }
-            if($scope.virtualOrder){
+            if ($scope.virtualOrder) {
                 obj.virtualOrder = true;
             }
             if ($scope.isOrder && $scope.dateStart && $scope.dateEnd) {
@@ -582,7 +581,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                             code: order.code,
                             date: moment(order.created_at).format('DD-MM-YYYY H:mm'),
                             created_at: order.created_at,
-                            phone: order.phone?order.phone._id:'',
+                            phone: order.phone ? order.phone : '',
                             nv: order.employee,
                             partner: order.partner
                         });
@@ -592,7 +591,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             });
         }
 
-//
+
         function showDialogRemoveHD($event, remove) {
             $scope.items = [1, 2, 3];
             let parentEl = angular.element(document.body);
@@ -636,7 +635,75 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             }
         }
 
+        $scope.showFindBlackOrder = function ($event) {
+            let parentEl = angular.element(document.body);
+            $mdDialog.show({
+                parent: parentEl,
+                targetEvent: $event,
+                clickOutsideToClose: true,
+                template:
+                    '<div class="black-order">' +
+                    '  <md-toolbar md-colors="{background: \'blue-grey\'}">\n' +
+                    '      <div class="md-toolbar-tools"  >\n' +
+                    '        <h2>Tìm đơn hàng đen</h2>\n' +
+                    '        <span flex></span>\n' +
+                    '        <md-button class="md-icon-button" ng-click="cancel()">\n' +
+                    '          <md-icon md-svg-src="img/baseline-close-24px.svg" aria-label="Close dialog"></md-icon>\n' +
+                    '        </md-button>\n' +
+                    '      </div>\n' +
+                    '  </md-toolbar>' +
+                    '  <form class="input-search-black" ng-submit="searchBlackOrder()">\n' +
+                    '                  <md-input-container class="md-icon-float md-block">\n' +
+                    '                        <label>Tìm hóa đơn ...</label>\n' +
+                    '                        <md-icon md-svg-src="img/ic_search_black_24px.svg"></md-icon>\n' +
+                    '                        <input ng-model="searchKey" type="text" style="text-transform: uppercase">\n' +
+                    '                    </md-input-container>\n' +
+                    '                   <md-select ng-model="modeFind"  class="md-no-underline">\n' +
+                    '                       <md-option value="code">Mã đơn hàng</md-option>\n' +
+                    '                       <md-option value="phone">Số điện thoại</md-option>\n' +
+                    '                 </md-select>' +
+                    '   </form>' +
+                    '  <dtable  ng-if="isRenderTable" options="options" rows="data" class="material" ></dtable>' +
+                    '</div>',
 
+                controller: DialogController
+            });
+
+            function DialogController($scope, $mdDialog, $timeout) {
+                $scope.options = angular.copy(options);
+                $scope.options.paging.count = 0;
+                $scope.modeFind = 'code';
+                $scope.isRenderTable = false;
+                $timeout(function () {
+                    $scope.isRenderTable = true;
+                }, 1000);
+                $scope.data = [];
+                $scope.cancel = function () {
+                    $mdDialog.cancel();
+                };
+                $scope.searchBlackOrder = function () {
+                    let obj = {phone: $scope.searchKey};
+                    if ($scope.modeFind === 'code') {
+                        obj = {code: $scope.searchKey};
+                    }
+                    findOrderBlack(obj, function (data) {
+                        $scope.data = [];
+                        data.forEach(function (order) {
+                            $scope.data.push({
+                                code: order.code,
+                                date: moment(order.created_at).format('DD-MM-YYYY H:mm'),
+                                created_at: order.created_at,
+                                phone: order.phone ? order.phone : '',
+                                nv: order.employee,
+                                partner: order.partner
+                            })
+                        });
+                        $scope.options.paging.count = $scope.data.length;
+                        $scope.$digest();
+                    })
+                }
+            }
+        };
         $scope.openChangePass = function (ev) {
             showDialogChangePass(ev);
         };

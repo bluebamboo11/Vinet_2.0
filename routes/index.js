@@ -45,6 +45,23 @@ router.post('/findOrderByCode', function (req, res, next) {
         next();
     }
 });
+router.post('/findOrderBlack', function (req, res, next) {
+    if (req.body) {
+        let obj = {};
+        if (req.body.phone) {
+            let listPhone = initPhone([req.body]);
+            console.log(listPhone);
+            obj.phone = {$in: listPhone};
+        } else {
+            obj.code = req.body.code
+        }
+        order.find(obj).sort("-created_at").exec(function (err, doc) {
+            res.send(doc);
+        })
+    } else {
+        next();
+    }
+});
 router.post('/getAllOrderByEmployee', function (req, res, next) {
     if (req.body) {
         let obj = {};
@@ -170,29 +187,29 @@ router.post('/importBlackList', function (req, res, next) {
 
 function initPhone(listPhone) {
     let listPhoneNew = [];
-    for(let black of listPhone) {
+    for (let black of listPhone) {
         let phone = black.phone;
         if (phone.slice(0, 3) == '840') {
-            addPhone( phone.slice(3, phone.length),listPhoneNew);
+            addPhone(phone.slice(3, phone.length), listPhoneNew);
             break;
         }
-        if(phone.slice(0,2)=='84'){
-            addPhone( phone.slice(2, phone.length),listPhoneNew);
+        if (phone.slice(0, 2) == '84') {
+            addPhone(phone.slice(2, phone.length), listPhoneNew);
             break;
         }
-        if(phone.slice(0,1)=='0'){
-            addPhone( phone.slice(1, phone.length),listPhoneNew);
+        if (phone.slice(0, 1) == '0') {
+            addPhone(phone.slice(1, phone.length), listPhoneNew);
             break;
         }
-        if(phone.slice(0,4)=='+840'){
-            addPhone( phone.slice(4, phone.length),listPhoneNew);
+        if (phone.slice(0, 4) == '+840') {
+            addPhone(phone.slice(4, phone.length), listPhoneNew);
             break;
         }
-        if(phone.slice(0,3)=='+84'){
-            addPhone( phone.slice(3, phone.length),listPhoneNew);
+        if (phone.slice(0, 3) == '+84') {
+            addPhone(phone.slice(3, phone.length), listPhoneNew);
             break;
         }
-        addPhone( phone,listPhoneNew);
+        addPhone(phone, listPhoneNew);
     }
     return listPhoneNew;
 }

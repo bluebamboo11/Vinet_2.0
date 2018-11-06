@@ -53,9 +53,11 @@
     flex-grow: 1;
     line-height: 0.5;
 }
-.page-count{
+
+.page-count {
     display: none !important;
 }
+
 md-dialog-actions > button {
     width: 200px;
 }
@@ -186,9 +188,11 @@ md-select {
 md-input-container {
     width: 100%;
 }
+
 .date-l md-input-container {
     width: 200px;
 }
+
 .date-l {
     display: flex;
     top: 0;
@@ -204,6 +208,7 @@ md-input-container {
 }
 
 .tb-hd {
+    position: relative;
     height: calc(100% - 156px);
     width: 100%;
 }
@@ -268,12 +273,18 @@ md-input-container {
 }
 
 .chek-total {
+    position: absolute;
+    bottom: 0;
+    left: 50px;
+    font-size: 20px;
+}
+
+.find-order {
     margin-left: 46px;
     margin-top: 33px;
     float: left;
     font-size: 20px;
 }
-
 
 .chek-total > button {
     width: 180px;
@@ -312,7 +323,7 @@ md-input-container {
 
 .login {
 
-   top: 0;
+    top: 0;
     left: 0;
     bottom: 0;
     right: 0;
@@ -332,23 +343,27 @@ md-input-container {
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
-.btn-login{
+
+.btn-login {
     margin-top: 30px !important;
-    margin-left: 240px!important;
-    margin-bottom: 40px!important;
+    margin-left: 240px !important;
+    margin-bottom: 40px !important;
 }
-.loading{
-    width: calc(100% + 80px)!important;
-    margin-left: -40px!important;
-    margin-right:-40px!important;
-    margin-top: -40px!important;
+
+.loading {
+    width: calc(100% + 80px) !important;
+    margin-left: -40px !important;
+    margin-right: -40px !important;
+    margin-top: -40px !important;
 }
-.admin{
-    right: 17px!important;
-    position: absolute!important;
-    top: 8px!important;
+
+.admin {
+    right: 17px !important;
+    position: absolute !important;
+    top: 8px !important;
 }
-.loading-all{
+
+.loading-all {
     position: fixed;
     top: 0;
     left: 0;
@@ -359,4 +374,30 @@ md-input-container {
     align-items: center;
     z-index: 1000;
     background-color: rgba(33, 33, 33, 0.47);
+}
+
+.black-order {
+    width: 960px;
+    height: 600px;
+}
+
+.input-search-black {
+    padding-top: 32px;
+    margin-left: 2%;
+    margin-right: 2%;
+    display: flex;
+    height: 30px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.black-order .dt {
+    width: 96%;
+    height: 450px;
+}
+.black-order md-select ,.black-order md-input-container{
+    width: auto;
+}
+.black-order .page-count{
+    display: inline-block !important;
 }

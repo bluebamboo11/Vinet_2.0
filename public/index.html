@@ -139,9 +139,15 @@
         </md-card>
         <div class="tb-hd">
             <dtable options="options" rows="data" class="material" on-page="paging(offset, size)"></dtable>
+            <div class="chek-total">
+                <md-button class="md-raised " ng-click="getTotal()"> {{total==0?'Tổng đơn hàng':'Tổng đơn hàng : '+total}}
+                </md-button>
+            </div>
         </div>
-        <div class="chek-total">
-            <md-button class="md-raised " ng-click="getTotal()"> {{total==0?'Tổng đơn hàng':'Tổng đơn hàng : '+total}}
+        <div class="find-order">
+            <md-button class="md-raised btn-nomal" ng-click="showFindBlackOrder()"  md-colors="{background: 'blue-grey'}" ngf-accept="'.csv'">
+                <md-icon md-svg-src="img/ic_search_white_24px.svg"></md-icon>
+                Tìm đơn hàng đen
             </md-button>
         </div>
         <div class="bot-bnt">

@@ -49,8 +49,14 @@ function getAllOrderByEmployee(obj, call) {
         call(data);
     })
 }
+
 function findOrderByCode(code, call) {
     postData('order/findOrderByCode',{code:code}).then(function (data) {
+        call(data);
+    })
+}
+function findOrderBlack(obj, call) {
+    postData('order/findOrderBlack',obj).then(function (data) {
         call(data);
     })
 }
