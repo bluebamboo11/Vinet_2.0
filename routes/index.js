@@ -47,7 +47,7 @@ router.post('/findOrderByCode', function (req, res, next) {
 });
 router.post('/findOrderBlack', function (req, res, next) {
     if (req.body) {
-        let obj = {};
+        let obj = {isBlack:true};
         if (req.body.phone) {
             let listPhone = initPhone([req.body]);
             obj.phone = {$in: listPhone};
