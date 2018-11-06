@@ -401,3 +401,9 @@ md-input-container {
 .black-order .page-count{
     display: inline-block !important;
 }
+.black-order md-progress-linear{
+    position: absolute;
+    bottom: 0;
+    width: 100% !important;
+    margin: 0 !important;
+}

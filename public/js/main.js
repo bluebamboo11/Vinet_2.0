@@ -27,7 +27,7 @@ let options = {
     }
 };
 angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages'])
-    .controller('AppCtrl', function ($scope, $http, $mdDialog, $mdToast,$timeout) {
+    .controller('AppCtrl', function ($scope, $http, $mdDialog, $mdToast, $timeout) {
         let all = 'Tất cả';
         $scope.isOrder = true;
         let datePicker = getDateByMontg(new Date());
@@ -271,7 +271,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                     if (data.ok) {
                                         getOrderByEmployee();
                                     }
-                                },1000)
+                                }, 1000)
                             })
                         }
                     });
@@ -309,7 +309,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                 if (data.ok) {
                                     getOrderByEmployee();
                                 }
-                            },1000)
+                            }, 1000)
                         })
                     }
                 });
@@ -380,7 +380,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                     code: order.code,
                                     date: moment(order.created_at).format('DD-MM-YYYY H:mm'),
                                     created_at: order.created_at,
-                                    phone: order.phone ? order.phone: '',
+                                    phone: order.phone ? order.phone : '',
                                     nv: order.employee,
                                     partner: order.partner
                                 });
@@ -664,6 +664,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     '                 </md-select>' +
                     '   </form>' +
                     '  <dtable  ng-if="isRenderTable" options="options" rows="data" class="material" ></dtable>' +
+                    ' <md-progress-linear class="loading" ng-show="showLoad" md-mode="indeterminate"></md-progress-linear>' +
                     '</div>',
 
                 controller: DialogController
@@ -673,6 +674,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 $scope.options = angular.copy(options);
                 $scope.options.paging.count = 0;
                 $scope.modeFind = 'code';
+                $scope.showLoad = false;
                 $scope.isRenderTable = false;
                 $timeout(function () {
                     $scope.isRenderTable = true;
@@ -682,12 +684,16 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     $mdDialog.cancel();
                 };
                 $scope.searchBlackOrder = function () {
+                    $scope.showLoad =true;
                     let obj = {phone: $scope.searchKey};
                     if ($scope.modeFind === 'code') {
                         obj = {code: $scope.searchKey};
                     }
                     findOrderBlack(obj, function (data) {
                         $scope.data = [];
+                        $timeout(function () {
+                            $scope.showLoad =false;
+                        }, 500);
                         data.forEach(function (order) {
                             $scope.data.push({
                                 code: order.code,
