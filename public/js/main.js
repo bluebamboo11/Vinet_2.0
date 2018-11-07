@@ -142,6 +142,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     $scope.userSelect = $scope.user;
                     $scope.isLogin = true;
                     $scope.showLoad = false;
+                    getOrderByEmployee();
                 }
                 else {
                     toast('Mật khẩu không đúng');
@@ -391,8 +392,8 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 
                         } else {
                             playAudio();
-                            if (data.phone) {
-                                alert('Đơn hàng ' + order.code + ' có sử dụng số điện thoại đen ' + data.phone , ev)
+                            if (data.phone) {thanht
+                                alert('Đơn hàng ' + order.code + ' Có sủ dụng  số điện thoại đen ' + data.phone , ev)
                             } else {
                                 alert('Đơn hàng ' + order.code + ' Đã được nhân viên ' + order.employee + ' Thêm vào ' + moment(order.created_at).format('DD-MM-YYYY H:mm'), ev)
                             }

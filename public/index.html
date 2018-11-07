@@ -147,7 +147,7 @@
             <md-card class="l-k">
                 <md-checkbox ng-model="blackLst" class="md-primary" ng-change="locHd()">KH đen</md-checkbox>
                 <md-checkbox ng-model="virtualOrder" class="md-primary" ng-change="locHd()"
-                             style="margin-left: 28px!important;">Đơn ảo
+                             style="margin-left: 28px!important;">Đơn chưa xử lý
                 </md-checkbox>
             </md-card>
         </div>
@@ -173,7 +173,7 @@
                 <md-icon md-svg-src="img/ic_file_upload_black_24px.svg"></md-icon>
                 Tải lên KH đen
             </md-button>
-            <md-button ng-disabled="disableExport" ng-click="exportOrder()" class="md-raised btn-nomal"
+            <md-button ng-disabled="disableExport"  ngf-select="exportOrder()" class="md-raised btn-nomal"
                        md-colors="{background: 'green'}">
                 <md-icon md-svg-src="img/ic_file_download_white_24px.svg"></md-icon>
                 Tải xuống

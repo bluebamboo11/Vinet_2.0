@@ -3,6 +3,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var orderSchema = new mongoose.Schema({
     code: String,
+    _id: String,
     partner: String,
     employee: String,
     isBlack: {type: Boolean, default: false},
@@ -19,9 +20,10 @@ var Phone = mongoose.model('phone', phoneSchema);
 router.post('/addOrder', function (req, res, next) {
         if (req.body) {
             const obj = req.body;
+            obj._id = obj.code;
             order.findOne({code: obj.code}, function (err, doc1) {
                 if (doc1) {
-                    Phone.findOne({_id: doc1.phone}, function (err, phone) {
+                    Phone.findOne({_id: {$in:initPhone([doc1.phone])}}, function (err, phone) {
                         if (phone) {
                             res.send({ok: false, phone: phone._id, order: doc1})
                         } else {
@@ -167,17 +169,23 @@ router.post('/removeOrderByCode', function (req, res, next) {
 });
 router.post('/importOrder', function (req, res, next) {
     if (req.body) {
-        req.body.forEach(function (data, index) {
-            Phone.findOne({_id: data.phone}, function (err, doc) {
-                if (doc) {
-                    data.isBlack = true;
-                }
-                order.findOneAndUpdate({code: data.code}, data, {upsert: true}, function () {
-                    if (index === req.body.length - 1) {
-                        res.send({ok: true});
+        let listPhone = [];
+        for (let orderData of req.body) {
+            orderData._id = orderData.code;
+            listPhone.push(orderData.phone);
+        }
+        Phone.find({_id: {$in: initPhone(req.body)}}, function (err, docs) {
+            for (let phoneBlack of docs) {
+                for (let orderData of req.body) {
+                    if (orderData.phone === phoneBlack._id) {
+                        orderData.isBlack = true;
+                        break
                     }
-                })
-            })
+                }
+            }
+            order.create(req.body, function () {
+                res.send({ok: true});
+            });
         });
     } else {
         res.send({ok: false});
@@ -185,15 +193,15 @@ router.post('/importOrder', function (req, res, next) {
 });
 router.post('/importBlackList', function (req, res, next) {
     if (req.body) {
-        let listPhone = initPhone(req.body);
-        listPhone.forEach(function (phone, index) {
-            order.findOneAndUpdate({phone: phone}, {isBlack: true}, {}, function () {
-            });
-            Phone.findOneAndUpdate({_id: phone}, {_id: phone}, {upsert: true}, function () {
-                if (index === listPhone.length - 1) {
-                    res.send({ok: true});
-                }
-            });
+        let listPhone = [];
+        for (let orderData of req.body) {
+            orderData._id = orderData.code;
+            listPhone.push(orderData.phone);
+        }
+        order.updateMany({phone: {$in: initPhone(req.body)}}, {isBlack: true}, {}, function () {
+        });
+        Phone.create(initPhoneMogo(listPhone), function () {
+            res.send({ok: true});
         });
     } else {
         res.send({ok: false});
@@ -201,48 +209,55 @@ router.post('/importBlackList', function (req, res, next) {
 });
 router.post('/addBlackPhone', function (req, res, next) {
     if (req.body) {
-        let listPhone = initPhone([req.body]);
-        listPhone.forEach(function (phone, index) {
-            order.findOneAndUpdate({phone: phone}, {isBlack: true}, {}, function () {
-            });
-            Phone.findOneAndUpdate({_id: phone}, {_id: phone}, {upsert: true}, function () {
-                if (index === listPhone.length - 1) {
-                    res.send({ok: true});
-                }
-            });
+        order.findOneAndUpdate({phone: {$in: initPhone([req.body])}}, {isBlack: true}, {}, function () {
+        });
+        Phone.findOneAndUpdate({_id: req.body.phone}, {_id: req.body.phone}, {upsert: true}, function () {
+            res.send({ok: true});
         });
     } else {
         res.send({ok: false});
     }
 });
 
+function initPhoneMogo(listPhone) {
+    let phoneMogo = [];
+    for (let black of listPhone) {
+        phoneMogo.push({_id: black})
+    }
+    return phoneMogo;
+}
+
 function initPhone(listPhone) {
     let listPhoneNew = [];
     for (let black of listPhone) {
         let phone = black.phone;
-        if (phone.slice(0, 3) == '840') {
-            addPhone(phone.slice(3, phone.length), listPhoneNew);
-            break;
-        }
-        if (phone.slice(0, 2) == '84') {
-            addPhone(phone.slice(2, phone.length), listPhoneNew);
-            break;
-        }
-        if (phone.slice(0, 1) == '0') {
-            addPhone(phone.slice(1, phone.length), listPhoneNew);
-            break;
-        }
-        if (phone.slice(0, 4) == '+840') {
-            addPhone(phone.slice(4, phone.length), listPhoneNew);
-            break;
-        }
-        if (phone.slice(0, 3) == '+84') {
-            addPhone(phone.slice(3, phone.length), listPhoneNew);
-            break;
-        }
-        addPhone(phone, listPhoneNew);
+        setPhone(phone, listPhoneNew)
     }
     return listPhoneNew;
+}
+
+function setPhone(phone, listPhoneNew) {
+    if (phone.slice(0, 3) == '840') {
+        addPhone(phone.slice(3, phone.length), listPhoneNew);
+        return
+    }
+    if (phone.slice(0, 2) == '84') {
+        addPhone(phone.slice(2, phone.length), listPhoneNew);
+        return
+    }
+    if (phone.slice(0, 1) == '0') {
+        addPhone(phone.slice(1, phone.length), listPhoneNew);
+        return
+    }
+    if (phone.slice(0, 4) == '+840') {
+        addPhone(phone.slice(4, phone.length), listPhoneNew);
+        return
+    }
+    if (phone.slice(0, 3) == '+84') {
+        addPhone(phone.slice(3, phone.length), listPhoneNew);
+        return
+    }
+    addPhone(phone, listPhoneNew);
 }
 
 function addPhone(phone, listPhone) {
