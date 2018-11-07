@@ -280,6 +280,45 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 });
             }
         };
+        $scope.upHdLex = function (file, ev) {
+            if (file) {
+                let confirm = $mdDialog.confirm()
+                    .parent(angular.element(document.body))
+                    .title('Tải Lên file đơn hàng lex')
+                    .textContent('Xác nhân tải lên file ' + file.name)
+                    .targetEvent(ev)
+                    .ok('Xác nhận')
+                    .cancel('Hủy');
+
+                $mdDialog.show(confirm).then(function () {
+                    Papa.parse(file, {
+                        header: true,
+                        complete: function (results, file) {
+                            $scope.isLoading = true;
+                            let dataImport = [];
+                            for (let i = 0; i < results.data.length; i++) {
+                                if (results.data[i]['Tracking Code'] && results.data[i]['Shipping Phone Number'] && !isNaN(results.data[i]['Shipping Phone Number'])) {
+                                    dataImport.push({
+                                        code: results.data[i]['Tracking Code'],
+                                        phone: results.data[i]['Shipping Phone Number']
+                                    })
+                                }
+                            }
+                            $scope.$digest();
+                            importOrder(dataImport, function (data) {
+                                $timeout(function () {
+                                    $scope.isLoading = false;
+                                    if (data.ok) {
+                                        toast('Tải lên thành công');
+                                        getOrderByEmployee();
+                                    }
+                                }, 1000)
+                            })
+                        }
+                    });
+                });
+            }
+        };
         $scope.isLoading = false;
         $scope.upBlackLst = function (file, ev) {
             let confirm = $mdDialog.confirm()

@@ -167,14 +167,19 @@
                 <md-icon md-svg-src="img/ic_file_upload_black_24px.svg"></md-icon>
                 Tải lên đơn hàng
             </md-button>
+            <md-button ngf-select="upHdLex(file,$event,true)" ng-model="file" ngf-accept="'.csv'" class="md-raised btn-nomal"
+                       md-colors="{background: 'blue-grey'}">
+                <md-icon md-svg-src="img/ic_file_upload_black_24px.svg"></md-icon>
+                Tải lên LEX
+            </md-button>
             <md-button ngf-select="upBlackLst(file,$event)" ng-model="file" ngf-accept="'.csv'"
-                       md-colors="{background: 'blue-grey'}"
+                       md-colors="{background: 'green'}"
                        class="md-raised btn-nomal">
                 <md-icon md-svg-src="img/ic_file_upload_black_24px.svg"></md-icon>
                 Tải lên KH đen
             </md-button>
             <md-button ng-disabled="disableExport"  ng-click="exportOrder()" class="md-raised btn-nomal"
-                       md-colors="{background: 'green'}">
+                       md-colors="{background: 'blue-grey'}">
                 <md-icon md-svg-src="img/ic_file_download_white_24px.svg"></md-icon>
                 Tải xuống
             </md-button>
