@@ -17,28 +17,38 @@ var order = mongoose.model('order', orderSchema);
 var Phone = mongoose.model('phone', phoneSchema);
 
 router.post('/addOrder', function (req, res, next) {
-    if (req.body) {
-        const obj = req.body;
-        Phone.findOne({_id: obj.phone}, function (err, phone) {
-            if (phone) {
-                obj.isBlack = true;
-            }
+        if (req.body) {
+            const obj = req.body;
             order.findOne({code: obj.code}, function (err, doc1) {
                 if (doc1) {
-                    res.send({ok: false, order: doc1})
+                    Phone.findOne({_id: doc1.phone}, function (err, phone) {
+                        if (phone) {
+                            res.send({ok: false, phone: phone._id, order: doc1})
+                        } else {
+                            if (doc1.employee) {
+                                res.send({ok: false, order: doc1})
+                            } else {
+                                doc1.employee = obj.employee;
+                                doc1.partner = obj.partner;
+                                doc1.save();
+                                res.send({ok: true, order: doc1})
+                            }
+                        }
+                    });
                 } else {
                     order.create(obj, function (err, doc) {
                         res.send({ok: true, order: doc})
                     });
                 }
-            })
-        });
-    } else {
-        next();
-    }
-});
-router.post('/findOrderByCode', function (req, res, next) {
 
+            })
+        }
+        else {
+            next();
+        }
+    }
+);
+router.post('/findOrderByCode', function (req, res, next) {
     if (req.body) {
         order.findOne({code: req.body.code}, function (err, doc) {
             if (doc) {
@@ -205,6 +215,7 @@ router.post('/addBlackPhone', function (req, res, next) {
         res.send({ok: false});
     }
 });
+
 function initPhone(listPhone) {
     let listPhoneNew = [];
     for (let black of listPhone) {
