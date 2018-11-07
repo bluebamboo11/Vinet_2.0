@@ -23,8 +23,8 @@ router.post('/addOrder', function (req, res, next) {
             obj._id = obj.code;
             order.findOne({code: obj.code}, function (err, doc1) {
                 if (doc1) {
-                    Phone.findOne({_id: {$in:initPhone([doc1.phone])}}, function (err, phone) {
-                        if (phone) {
+                    Phone.findOne({_id: {$in: initPhone([{phone: doc1.phone}])}}, function (err, phone) {
+                        if (phone && !obj.isConfirm) {
                             res.send({ok: false, phone: phone._id, order: doc1})
                         } else {
                             if (doc1.employee) {

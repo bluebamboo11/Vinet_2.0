@@ -365,12 +365,13 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 
             }
         };
-        $scope.addHD = function (ev) {
+        $scope.addHD = function (ev,isConfirm) {
             $scope.maDonHang = $scope.maDonHang.toUpperCase();
             let maDonHang = angular.copy($scope.maDonHang);
             if ($scope.maDonHang) {
                 if (!($scope.maDonHang.indexOf(" ") > -1)) {
                     addOrder({
+                        isConfirm:isConfirm,
                         code: maDonHang,
                         partner: $scope.partner,
                         employee: $scope.userSelect.name
@@ -392,14 +393,12 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 
                         } else {
                             playAudio();
-                            if (data.phone) {thanht
-                                alert('Đơn hàng ' + order.code + ' Có sủ dụng  số điện thoại đen ' + data.phone , ev)
+                            if (data.phone) {
+                                confirm('Đơn hàng ' + order.code + ' có sử dụng  số điện thoại đen ' + data.phone +' .Bạn có chắc chắn muốn thêm', ev)
                             } else {
                                 alert('Đơn hàng ' + order.code + ' Đã được nhân viên ' + order.employee + ' Thêm vào ' + moment(order.created_at).format('DD-MM-YYYY H:mm'), ev)
                             }
-
                         }
-
                     })
                 } else {
                     playAudio();
@@ -411,6 +410,22 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             }
 
         };
+
+        function confirm(text,ev) {
+            $mdDialog.show(
+                $mdDialog.confirm()
+                    .parent(angular.element(document.body))
+                    .clickOutsideToClose(true)
+                    .title('Lỗi thêm đơn hàng')
+                    .textContent(text)
+                    .ok('Ok')
+                    .cancel('Hủy')
+                    .targetEvent(ev)
+            ).then(function () {
+                $scope.addHD(ev,true)
+            })
+            
+        }
 
         function alert(text, ev) {
             $mdDialog.show(
@@ -487,6 +502,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             })
         };
         $scope.exportOrder = function () {
+            $scope.isLoading = true;
             $scope.disableExport = true;
             let dataExport = [];
             let obj = getDate();
@@ -501,6 +517,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 }, {delimiter: ';'});
                 let blob = new Blob([csv], {type: "text/plain;charset=utf-8"});
                 saveAs(blob, "order.export.csv");
+                $scope.isLoading = false;
                 $scope.disableExport = false;
             });
         };
@@ -600,18 +617,18 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 parent: parentEl,
                 targetEvent: $event,
                 template:
-                '<md-dialog aria-label="Xóa đơn hàng theo tháng">\n' +
-                '    <md-dialog-content class="md-dialog-content">\n' +
-                '        <h2 class="md-title ">Xóa Đơn hàng theo tháng</h2>\n' +
-                '<div  class="md-dialog-content-body " ><p >Nhập tháng cần xóa</p></div>' +
-                '   <md-datepicker style="margin-left: -16x!important;" md-mode="month" ng-model="dateRemove" md-placeholder="Nhập tháng"\n' +
-                '                       md-date-locale="dateLocaleMonth"></md-datepicker>\n' +
-                '    </md-dialog-content>\n' +
-                '    <md-dialog-actions>\n' +
-                '        <md-button ng-click="closeDialog()" class="md-primary">Hủy</md-button>\n' +
-                '        <md-button  ng-disabled="!dateRemove" ng-click="removeOderMonth()" class="md-primary"> Xóa</md-button>\n' +
-                '    </md-dialog-actions>\n' +
-                '</md-dialog>',
+                    '<md-dialog aria-label="Xóa đơn hàng theo tháng">\n' +
+                    '    <md-dialog-content class="md-dialog-content">\n' +
+                    '        <h2 class="md-title ">Xóa Đơn hàng theo tháng</h2>\n' +
+                    '<div  class="md-dialog-content-body " ><p >Nhập tháng cần xóa</p></div>' +
+                    '   <md-datepicker style="margin-left: -16x!important;" md-mode="month" ng-model="dateRemove" md-placeholder="Nhập tháng"\n' +
+                    '                       md-date-locale="dateLocaleMonth"></md-datepicker>\n' +
+                    '    </md-dialog-content>\n' +
+                    '    <md-dialog-actions>\n' +
+                    '        <md-button ng-click="closeDialog()" class="md-primary">Hủy</md-button>\n' +
+                    '        <md-button  ng-disabled="!dateRemove" ng-click="removeOderMonth()" class="md-primary"> Xóa</md-button>\n' +
+                    '    </md-dialog-actions>\n' +
+                    '</md-dialog>',
                 locals: {
                     items: $scope.items
                 },
@@ -643,30 +660,30 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 targetEvent: $event,
                 clickOutsideToClose: true,
                 template:
-                '<div class="black-order">' +
-                '  <md-toolbar md-colors="{background: \'blue-grey\'}">\n' +
-                '      <div class="md-toolbar-tools"  >\n' +
-                '        <h2>Tìm đơn hàng đen</h2>\n' +
-                '        <span flex></span>\n' +
-                '        <md-button class="md-icon-button" ng-click="cancel()">\n' +
-                '          <md-icon md-svg-src="img/baseline-close-24px.svg" aria-label="Close dialog"></md-icon>\n' +
-                '        </md-button>\n' +
-                '      </div>\n' +
-                '  </md-toolbar>' +
-                '  <form class="input-search-black" ng-submit="searchBlackOrder()">\n' +
-                '                  <md-input-container class="md-icon-float md-block">\n' +
-                '                        <label>Tìm hóa đơn ...</label>\n' +
-                '                        <md-icon md-svg-src="img/ic_search_black_24px.svg"></md-icon>\n' +
-                '                        <input ng-model="searchKey" type="text" style="text-transform: uppercase">\n' +
-                '                    </md-input-container>\n' +
-                '                   <md-select ng-model="modeFind"  class="md-no-underline">\n' +
-                '                       <md-option value="code">Mã đơn hàng</md-option>\n' +
-                '                       <md-option value="phone">Số điện thoại</md-option>\n' +
-                '                 </md-select>' +
-                '   </form>' +
-                '  <dtable  ng-if="isRenderTable" options="options" rows="data" class="material" ></dtable>' +
-                ' <md-progress-linear class="loading" ng-show="showLoad" md-mode="indeterminate"></md-progress-linear>' +
-                '</div>',
+                    '<div class="black-order">' +
+                    '  <md-toolbar md-colors="{background: \'blue-grey\'}">\n' +
+                    '      <div class="md-toolbar-tools"  >\n' +
+                    '        <h2>Tìm đơn hàng đen</h2>\n' +
+                    '        <span flex></span>\n' +
+                    '        <md-button class="md-icon-button" ng-click="cancel()">\n' +
+                    '          <md-icon md-svg-src="img/baseline-close-24px.svg" aria-label="Close dialog"></md-icon>\n' +
+                    '        </md-button>\n' +
+                    '      </div>\n' +
+                    '  </md-toolbar>' +
+                    '  <form class="input-search-black" ng-submit="searchBlackOrder()">\n' +
+                    '                  <md-input-container class="md-icon-float md-block">\n' +
+                    '                        <label>Tìm hóa đơn ...</label>\n' +
+                    '                        <md-icon md-svg-src="img/ic_search_black_24px.svg"></md-icon>\n' +
+                    '                        <input ng-model="searchKey" type="text" style="text-transform: uppercase">\n' +
+                    '                    </md-input-container>\n' +
+                    '                   <md-select ng-model="modeFind"  class="md-no-underline">\n' +
+                    '                       <md-option value="code">Mã đơn hàng</md-option>\n' +
+                    '                       <md-option value="phone">Số điện thoại</md-option>\n' +
+                    '                 </md-select>' +
+                    '   </form>' +
+                    '  <dtable  ng-if="isRenderTable" options="options" rows="data" class="material" ></dtable>' +
+                    ' <md-progress-linear class="loading" ng-show="showLoad" md-mode="indeterminate"></md-progress-linear>' +
+                    '</div>',
 
                 controller: DialogController
             });
@@ -724,29 +741,29 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 parent: parentEl,
                 targetEvent: $event,
                 template:
-                '<md-dialog aria-label="Xóa đơn hàng theo tháng">\n' +
-                '    <md-dialog-content class="md-dialog-content">\n' +
-                '        <h2 class="md-title ">Đối mật khẩu</h2>\n' +
-                '  <md-select ng-disabled="userLogin.name!==admin" name="user" required placeholder="Chọn tài khoản" ng-model="userPass" \n' +
-                '                           style="width: 100%;">\n' +
-                '    <md-option ng-value="user" ng-repeat="user in users">{{user.name}}</md-option>\n' +
-                '   </md-select>' +
-                '<md-input-container>\n' +
-                ' <label>Nhập mật khẩu tài khoản</label>\n' +
-                '         <input name="pass" type="password" md-maxlength="30" required  name="description"\n' +
-                '                           ng-model="passOld">\n' +
-                '          </md-input-container>' + '' +
-                '<md-input-container>\n' +
-                '                    <label>Nhập mật khẩu mới</label>\n' +
-                '                    <input name="pass"  md-maxlength="30" required  name="description"\n' +
-                '                           ng-model="passNew">\n' +
-                '                </md-input-container>' +
-                '    </md-dialog-content>\n' +
-                '    <md-dialog-actions>\n' +
-                '        <md-button ng-click="closeDialog()" class="md-primary">Hủy</md-button>\n' +
-                '        <md-button  ng-disabled="!userPass||!passOld||!passNew" ng-click="changePass()" class="md-primary"> Xác nhận</md-button>\n' +
-                '    </md-dialog-actions>\n' +
-                '</md-dialog>',
+                    '<md-dialog aria-label="Xóa đơn hàng theo tháng">\n' +
+                    '    <md-dialog-content class="md-dialog-content">\n' +
+                    '        <h2 class="md-title ">Đối mật khẩu</h2>\n' +
+                    '  <md-select ng-disabled="userLogin.name!==admin" name="user" required placeholder="Chọn tài khoản" ng-model="userPass" \n' +
+                    '                           style="width: 100%;">\n' +
+                    '    <md-option ng-value="user" ng-repeat="user in users">{{user.name}}</md-option>\n' +
+                    '   </md-select>' +
+                    '<md-input-container>\n' +
+                    ' <label>Nhập mật khẩu tài khoản</label>\n' +
+                    '         <input name="pass" type="password" md-maxlength="30" required  name="description"\n' +
+                    '                           ng-model="passOld">\n' +
+                    '          </md-input-container>' + '' +
+                    '<md-input-container>\n' +
+                    '                    <label>Nhập mật khẩu mới</label>\n' +
+                    '                    <input name="pass"  md-maxlength="30" required  name="description"\n' +
+                    '                           ng-model="passNew">\n' +
+                    '                </md-input-container>' +
+                    '    </md-dialog-content>\n' +
+                    '    <md-dialog-actions>\n' +
+                    '        <md-button ng-click="closeDialog()" class="md-primary">Hủy</md-button>\n' +
+                    '        <md-button  ng-disabled="!userPass||!passOld||!passNew" ng-click="changePass()" class="md-primary"> Xác nhận</md-button>\n' +
+                    '    </md-dialog-actions>\n' +
+                    '</md-dialog>',
                 locals: {
                     pass: $scope.pass,
                     userLogin: $scope.user,
