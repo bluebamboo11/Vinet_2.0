@@ -23,20 +23,32 @@ router.post('/addOrder', function (req, res, next) {
             obj._id = obj.code;
             order.findOne({code: obj.code}, function (err, doc1) {
                 if (doc1) {
-                    Phone.findOne({_id: {$in: initPhone([{phone: doc1.phone}])}}, function (err, phone) {
-                        if (phone && !obj.isConfirm) {
-                            res.send({ok: false, phone: phone._id, order: doc1})
-                        } else {
-                            if (doc1.employee) {
-                                res.send({ok: false, order: doc1})
+                    if(doc1.phone){
+                        Phone.findOne({_id: {$in: initPhone([{phone: doc1.phone}])}}, function (err, phone) {
+                            if (phone && !obj.isConfirm) {
+                                res.send({ok: false, phone: phone._id, order: doc1})
                             } else {
-                                doc1.employee = obj.employee;
-                                doc1.partner = obj.partner;
-                                doc1.save();
-                                res.send({ok: true, order: doc1})
+                                if (doc1.employee) {
+                                    res.send({ok: false, order: doc1})
+                                } else {
+                                    doc1.employee = obj.employee;
+                                    doc1.partner = obj.partner;
+                                    doc1.save();
+                                    res.send({ok: true, order: doc1})
+                                }
                             }
+                        });
+                    }else {
+                        if (doc1.employee) {
+                            res.send({ok: false, order: doc1})
+                        } else {
+                            doc1.employee = obj.employee;
+                            doc1.partner = obj.partner;
+                            doc1.save();
+                            res.send({ok: true, order: doc1})
                         }
-                    });
+                    }
+
                 } else {
                     order.create(obj, function (err, doc) {
                         res.send({ok: true, order: doc})
