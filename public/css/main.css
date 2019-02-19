@@ -270,6 +270,7 @@ md-input-container {
     margin-top: 30px;
     margin-right: 60px;
     float: right;
+    width: 90%;
 }
 
 .chek-total {

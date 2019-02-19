@@ -143,8 +143,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     $scope.isLogin = true;
                     $scope.showLoad = false;
                     getOrderByEmployee();
-                }
-                else {
+                } else {
                     toast('Mật khẩu không đúng');
                     $scope.showLoad = false;
                 }
@@ -382,8 +381,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                         name: "Đối tác",
                         prop: "partner"
                     }]
-                }
-                else {
+                } else {
                     if ($scope.options.columns.length === 5) {
                         $scope.options.columns = [
                             {
@@ -404,13 +402,13 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 
             }
         };
-        $scope.addHD = function (ev,isConfirm) {
+        $scope.addHD = function (ev, isConfirm) {
             $scope.maDonHang = $scope.maDonHang.toUpperCase();
             let maDonHang = angular.copy($scope.maDonHang);
             if ($scope.maDonHang) {
                 if (!($scope.maDonHang.indexOf(" ") > -1)) {
                     addOrder({
-                        isConfirm:isConfirm,
+                        isConfirm: isConfirm,
                         code: maDonHang,
                         partner: $scope.partner,
                         employee: $scope.userSelect.name
@@ -433,7 +431,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                         } else {
                             playAudio();
                             if (data.phone) {
-                                confirm('Đơn hàng ' + order.code + ' có sử dụng  số điện thoại đen ' + data.phone +' .Bạn có chắc chắn muốn thêm', ev)
+                                confirm('Đơn hàng ' + order.code + ' có sử dụng  số điện thoại đen ' + data.phone + ' .Bạn có chắc chắn muốn thêm', ev)
                             } else {
                                 alert('Đơn hàng ' + order.code + ' Đã được nhân viên ' + order.employee + ' Thêm vào ' + moment(order.created_at).format('DD-MM-YYYY H:mm'), ev)
                             }
@@ -450,7 +448,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
 
         };
 
-        function confirm(text,ev) {
+        function confirm(text, ev) {
             $mdDialog.show(
                 $mdDialog.confirm()
                     .parent(angular.element(document.body))
@@ -461,9 +459,9 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                     .cancel('Hủy')
                     .targetEvent(ev)
             ).then(function () {
-                $scope.addHD(ev,true)
+                $scope.addHD(ev, true)
             })
-            
+
         }
 
         function alert(text, ev) {
@@ -509,8 +507,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                                     .targetEvent(ev)
                             );
                         }
-                    }
-                    else {
+                    } else {
                         $mdDialog.show(
                             $mdDialog.alert()
                                 .parent(angular.element(document.body))
@@ -547,6 +544,10 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             let obj = getDate();
             obj.isFull = true;
             getAllOrderByEmployee(obj, function (data) {
+                $scope.$apply(function () {
+                    $scope.isLoading = false;
+                    $scope.disableExport = false;
+                });
                 for (let order of data) {
                     dataExport.push([order.code, moment(order.created_at).format('DD-MM-YYYY H:mm'), order.employee, order.partner])
                 }
@@ -556,8 +557,46 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                 }, {delimiter: ';'});
                 let blob = new Blob([csv], {type: "text/plain;charset=utf-8"});
                 saveAs(blob, "order.export.csv");
-                $scope.isLoading = false;
-                $scope.disableExport = false;
+
+            });
+        };
+        $scope.exportOrderByPartner = function () {
+            if ($scope.partner === all) {
+                alert('Vui lòng chọn đối tác');
+                return;
+            }
+            var title = "BẢNG KÊ CHI TIẾT ĐƠN HÀNG GIAO CHO BÊN " + $scope.partner;
+
+            $scope.isLoading = true;
+            $scope.disableExport = true;
+            let dataExport = [];
+            let obj = getDate(true);
+            var day = "Ngày " + moment($scope.dateStart).format('DD/MM/YYYY');
+            obj.isFull = true;
+            dataExport.push([title]);
+            dataExport.push([day]);
+            dataExport.push([' ']);
+            getAllOrderByEmployee(obj, function (data) {
+                $scope.$apply(function () {
+                    $scope.isLoading = false;
+                    $scope.disableExport = false;
+                });
+
+                dataExport.push(["STT", "Số hóa đơn"]);
+
+                var i = 0;
+                for (let order of data) {
+                    i++;
+                    dataExport.push([i, order.code])
+                }
+                dataExport.push(['Tổng số đơn: '+i]);
+                dataExport.push(['Bên giao','Bên nhận']);
+                let csv = Papa.unparse({
+                    data: dataExport
+                }, {delimiter: ';'});
+                let blob = new Blob([csv], {type: "text/plain;charset=utf-8"});
+                saveAs(blob, "bang_ke_" + $scope.partner + ".csv");
+
             });
         };
         $scope.removeHDMonth = function (ev) {
@@ -602,8 +641,9 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             });
         }
 
-        function getDate() {
+        function getDate(isOneDay) {
             let obj = {};
+
             if ($scope.partner !== all) {
                 obj.partner = $scope.partner;
             }
@@ -616,11 +656,19 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
             if ($scope.virtualOrder) {
                 obj.virtualOrder = true;
             }
-            if ($scope.isOrder && $scope.dateStart && $scope.dateEnd) {
+            if (!isOneDay && $scope.isOrder && $scope.dateStart && $scope.dateEnd) {
                 $scope.dateEnd.setHours(24);
                 $scope.dateEnd.setMinutes(0);
                 obj.start = $scope.dateStart;
                 obj.end = $scope.dateEnd;
+                return obj;
+            }
+            if (isOneDay && $scope.isOrder && $scope.dateStart) {
+                var dateEnd = angular.copy($scope.dateStart);
+                dateEnd.setHours(24);
+                dateEnd.setMinutes(0);
+                obj.start = $scope.dateStart;
+                obj.end = dateEnd;
                 return obj;
             }
             obj.all = true;
@@ -824,8 +872,7 @@ angular.module('MyApp', ['ngMaterial', 'data-table', 'ngFileUpload', 'ngMessages
                         updatePass($scope.userPass, function (value) {
                             toast('Đổi mật khẩu thành công');
                         });
-                    }
-                    else {
+                    } else {
                         toast('Mật khẩu không chính xác');
                     }
                 };

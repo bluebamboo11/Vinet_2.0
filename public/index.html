@@ -178,12 +178,27 @@
                 <md-icon md-svg-src="img/ic_file_upload_black_24px.svg"></md-icon>
                 Tải lên KH đen
             </md-button>
-            <md-button ng-disabled="disableExport"  ng-click="exportOrder()" class="md-raised btn-nomal"
-                       md-colors="{background: 'blue-grey'}">
-                <md-icon md-svg-src="img/ic_file_download_white_24px.svg"></md-icon>
-                Tải xuống
-            </md-button>
 
+            <md-menu>
+                <md-button style="text-transform: none !important;" class="md-accent md-raised "
+                           ng-click="$mdMenu.open($event)">
+                    <md-icon md-svg-src="img/ic_file_download_white_24px.svg" style="color:white"></md-icon>
+                   Tải Xuống
+                </md-button>
+                <md-menu-content width="4">
+
+                    <md-menu-item>
+                        <md-button ng-click="exportOrder()">
+                            Tải xuống đơn hàng đầy đủ
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-click="exportOrderByPartner()">
+                            Tải xuống theo đối tác
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
         </div>
     </div>
 </div>
